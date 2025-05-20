@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Workahomie</string>
+    <string name="com_auth0_domain">ferroxido.auth0.com</string>
+    <string name="com_auth0_scheme">demo</string>
+</resources>
