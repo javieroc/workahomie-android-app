@@ -5,9 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.AuthViewModelFactory
-import com.app.workahomie.screens.AuthScreen
+import com.app.workahomie.ui.screens.AuthScreen
 import com.app.workahomie.ui.theme.WorkahomieTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,9 @@ class MainActivity : ComponentActivity() {
 
         val auth0Client = Auth0Client(this, domain, clientId, scheme)
         val authViewModel = ViewModelProvider(this, AuthViewModelFactory(auth0Client))[AuthViewModel::class.java]
-
         enableEdgeToEdge()
         setContent {
+            val marsViewModel: AuthViewModel = viewModel<AuthViewModel>()
             WorkahomieTheme {
                 AuthScreen(authViewModel)
             }

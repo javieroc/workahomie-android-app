@@ -1,4 +1,4 @@
-package com.app.workahomie.screens
+package com.app.workahomie.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

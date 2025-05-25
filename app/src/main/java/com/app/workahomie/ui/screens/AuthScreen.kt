@@ -1,4 +1,4 @@
-package com.app.workahomie.screens
+package com.app.workahomie.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +9,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.models.AuthViewModel
+import com.app.workahomie.models.MarsViewModel
 
 @Composable
 fun AuthScreen(viewModel: AuthViewModel) {
@@ -23,7 +25,11 @@ fun AuthScreen(viewModel: AuthViewModel) {
     }
 
     if (isLoggedIn) {
-        ProfileScreen(viewModel)
+        val marsViewModel: MarsViewModel = viewModel()
+        HomeScreen(
+            marsUiState = marsViewModel.marsUiState,
+        )
+        // ProfileScreen(viewModel)
     } else {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (error != null) {
