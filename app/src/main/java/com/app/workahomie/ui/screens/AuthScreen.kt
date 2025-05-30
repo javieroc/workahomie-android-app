@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.models.AuthViewModel
-import com.app.workahomie.models.MarsViewModel
+import com.app.workahomie.models.HostViewModel
 
 @Composable
 fun AuthScreen(viewModel: AuthViewModel) {
@@ -18,11 +18,10 @@ fun AuthScreen(viewModel: AuthViewModel) {
     }
 
     if (isLoggedIn) {
-        val marsViewModel: MarsViewModel = viewModel()
+        val hostViewModel: HostViewModel = viewModel()
         HomeScreen(
-            marsUiState = marsViewModel.marsUiState,
+            hostsUiState = hostViewModel.hostsUiState,
         )
-        // ProfileScreen(viewModel)
     } else {
         if (error != null) {
             ErrorScreen(error)
