@@ -4,6 +4,9 @@ import android.app.Activity
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.storage.CredentialsManager
+import com.auth0.android.authentication.storage.CredentialsManagerException
+import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
@@ -11,12 +14,13 @@ import com.auth0.android.result.UserProfile
 
 class Auth0Client(
     private val activity: Activity,
-    private val domain: String,
-    private val clientId: String,
+    domain: String,
+    clientId: String,
     private val scheme: String
 ) {
     private val auth0 = Auth0.getInstance(clientId, domain)
     private val authApiClient = AuthenticationAPIClient(auth0)
+    private val credentialsManager = CredentialsManager(authApiClient, SharedPreferencesStorage(activity))
 
     fun login(
         onSuccess: (accessToken: String, user: UserProfile) -> Unit,
@@ -31,8 +35,9 @@ class Auth0Client(
                 }
 
                 override fun onSuccess(result: Credentials) {
-                    val token = result.accessToken
+                    credentialsManager.saveCredentials(result)
 
+                    val token = result.accessToken
                     authApiClient.userInfo(token)
                         .start(object : Callback<UserProfile, AuthenticationException> {
                             override fun onFailure(error: AuthenticationException) {
@@ -59,8 +64,45 @@ class Auth0Client(
                 }
 
                 override fun onSuccess(result: Void?) {
+                    credentialsManager.clearCredentials()
                     onSuccess()
                 }
             })
     }
+
+    fun hasValidSession(): Boolean {
+        return credentialsManager.hasValidCredentials()
+    }
+
+    fun getSavedCredentials(
+        onSuccess: (accessToken: String, user: UserProfile) -> Unit,
+        onFailure: (error: String) -> Unit
+    ) {
+        if (!credentialsManager.hasValidCredentials()) {
+            onFailure("No saved credentials")
+            return
+        }
+
+        credentialsManager.getCredentials(object : Callback<Credentials, CredentialsManagerException> {
+            override fun onFailure(error: CredentialsManagerException) {
+                onFailure(error.message ?: "Unknown credentials error")
+            }
+
+            override fun onSuccess(result: Credentials) {
+                val token = result.accessToken
+
+                authApiClient.userInfo(token)
+                    .start(object : Callback<UserProfile, AuthenticationException> {
+                        override fun onFailure(error: AuthenticationException) {
+                            onFailure(error.getDescription())
+                        }
+
+                        override fun onSuccess(result: UserProfile) {
+                            onSuccess(token, result)
+                        }
+                    })
+            }
+        })
+    }
+
 }

@@ -23,6 +23,9 @@ class AuthViewModel(
     var userProfile by mutableStateOf<UserProfile?>(null)
         private set
 
+    init {
+        restoreSession()
+    }
 
     fun login() {
         auth0Client.login(
@@ -51,4 +54,23 @@ class AuthViewModel(
             }
         )
     }
+
+    fun restoreSession() {
+        if (auth0Client.hasValidSession()) {
+            auth0Client.getSavedCredentials(
+                onSuccess = { token, profile ->
+                    isLoggedIn = true
+                    accessToken = token
+                    userProfile = profile
+                    errorMessage = null
+                },
+                onFailure = {
+                    errorMessage = it
+                }
+            )
+        } else {
+            login()
+        }
+    }
+
 }

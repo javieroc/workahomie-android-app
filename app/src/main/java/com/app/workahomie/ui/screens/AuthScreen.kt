@@ -11,12 +11,6 @@ fun AuthScreen(viewModel: AuthViewModel) {
     val isLoggedIn = viewModel.isLoggedIn
     val error = viewModel.errorMessage
 
-    LaunchedEffect(isLoggedIn) {
-        if (!isLoggedIn) {
-            viewModel.login()
-        }
-    }
-
     if (isLoggedIn) {
         val hostViewModel: HostViewModel = viewModel()
         HomeScreen(
