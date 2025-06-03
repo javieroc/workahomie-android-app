@@ -19,7 +19,7 @@ import com.app.workahomie.ui.components.HostCard
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(
+fun HostsScreen(
     hostsUiState: HostsUiState,
     modifier: Modifier = Modifier,
 ) {

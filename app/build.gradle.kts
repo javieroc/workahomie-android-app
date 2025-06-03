@@ -77,6 +77,10 @@ dependencies {
     // ViewModel utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
 
-    // Foundation
+    // Foundation - Pager component
     implementation("androidx.compose.foundation:foundation:1.8.2")
+
+    // Navigation
+    val nav_version = "2.9.0"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 }

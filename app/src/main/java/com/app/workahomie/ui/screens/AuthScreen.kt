@@ -1,7 +1,6 @@
 package com.app.workahomie.ui.screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.HostViewModel
@@ -13,8 +12,9 @@ fun AuthScreen(viewModel: AuthViewModel) {
 
     if (isLoggedIn) {
         val hostViewModel: HostViewModel = viewModel()
-        HomeScreen(
-            hostsUiState = hostViewModel.hostsUiState,
+        MainScreen(
+            authViewModel = viewModel,
+            hostViewModel = hostViewModel,
         )
     } else {
         if (error != null) {
