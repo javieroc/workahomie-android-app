@@ -2,29 +2,27 @@ package com.app.workahomie.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.app.workahomie.models.AuthState
 import com.app.workahomie.models.AuthViewModel
 
 @Composable
 fun AuthScreen(viewModel: AuthViewModel) {
-    val isLoggedIn = viewModel.isLoggedIn
-    val error = viewModel.errorMessage
+    val state = viewModel.authState
     val user = viewModel.userProfile
+    val error = viewModel.errorMessage
 
-    LaunchedEffect(key1 = isLoggedIn, key2 = error) {
-        if (!isLoggedIn && error == null) {
-            viewModel.login()
-        }
-    }
+    when (state) {
+        AuthState.CHECKING -> LoadingScreen()
 
-    when {
-        isLoggedIn && user != null -> {
-            MainScreen(authViewModel = viewModel)
-        }
-        error != null -> {
-            ErrorScreen(error)
-        }
-        else -> {
+        AuthState.LOGGED_IN -> MainScreen(authViewModel = viewModel)
+
+        AuthState.NOT_LOGGED_IN -> {
+            LaunchedEffect(Unit) {
+                viewModel.login()
+            }
             LoadingScreen()
         }
+
+        AuthState.ERROR -> ErrorScreen(error ?: "Unknown error")
     }
 }
