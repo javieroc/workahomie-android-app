@@ -16,10 +16,9 @@ import com.app.workahomie.ui.components.BottomNavigationBar
 @Composable
 fun MainScreen(
     authViewModel: AuthViewModel,
-    hostViewModel: HostViewModel = viewModel()
 ) {
     val navController = rememberNavController()
-
+    val hostViewModel: HostViewModel = viewModel()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->

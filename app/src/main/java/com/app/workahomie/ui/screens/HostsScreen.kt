@@ -13,7 +13,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.data.Host
+import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostsUiState
 import com.app.workahomie.ui.components.HostCard
 
