@@ -56,21 +56,19 @@ class AuthViewModel(
     }
 
     fun restoreSession() {
-        if (auth0Client.hasValidSession()) {
-            auth0Client.getSavedCredentials(
-                onSuccess = { token, profile ->
-                    isLoggedIn = true
-                    accessToken = token
-                    userProfile = profile
-                    errorMessage = null
-                },
-                onFailure = {
-                    errorMessage = it
-                }
-            )
-        } else {
-            login()
-        }
+        isLoggedIn = false
+        accessToken = null
+        userProfile = null
+        errorMessage = null
+
+        auth0Client.getSavedCredentials(
+            onSuccess = { token, profile ->
+                isLoggedIn = true
+                accessToken = token
+                userProfile = profile
+            },
+            onFailure = {}
+        )
     }
 
 }
