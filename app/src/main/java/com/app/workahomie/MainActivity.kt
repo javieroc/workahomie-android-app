@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         val authViewModel = ViewModelProvider(this, AuthViewModelFactory(auth0Client))[AuthViewModel::class.java]
         enableEdgeToEdge()
         setContent {
-            WorkahomieTheme {
+            WorkahomieTheme(darkTheme = false, dynamicColor = false) {
                 AuthScreen(authViewModel)
             }
         }
