@@ -1,5 +1,6 @@
 package com.app.workahomie.models
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,23 +19,54 @@ sealed interface HostsUiState {
 }
 
 class HostViewModel : ViewModel() {
+    private var offset = 0
+    private val limit = 10
+
+    var isPaginating by mutableStateOf(false)
+        private set
+
+    private var isLastPage = false
+
+    private val loadedHosts = mutableListOf<Host>()
+
     var hostsUiState: HostsUiState by mutableStateOf(HostsUiState.Loading)
         private set
 
+    var isMapView by mutableStateOf(false)
+        private set
+
     init {
-        getHosts()
+        loadMoreHosts()
     }
 
-    fun getHosts() {
+    fun toggleView() {
+        isMapView = !isMapView
+    }
+
+    fun loadMoreHosts() {
+        if (isPaginating || isLastPage) return
+
+        isPaginating = true
+
         viewModelScope.launch {
-            hostsUiState = HostsUiState.Loading
-            hostsUiState = try {
-                val listResult = HostApi.retrofitService.getHosts()
-                HostsUiState.Success(listResult.data)
+            try {
+                val response = HostApi.retrofitService.getHosts(offset = offset, limit = limit)
+                Log.d("Pagination", "Fetched ${response.data.size} hosts at offset $offset")
+                val newHosts = response.data
+
+                if (newHosts.isEmpty()) {
+                    isLastPage = true
+                } else {
+                    loadedHosts.addAll(newHosts)
+                    hostsUiState = HostsUiState.Success(loadedHosts.toList())
+                    offset += limit
+                }
             } catch (e: IOException) {
-                HostsUiState.Error
+                hostsUiState = HostsUiState.Error
             } catch (e: HttpException) {
-                HostsUiState.Error
+                hostsUiState = HostsUiState.Error
+            } finally {
+                isPaginating = false
             }
         }
     }

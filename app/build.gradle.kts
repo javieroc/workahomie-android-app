@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -40,6 +41,12 @@ android {
     buildFeatures {
         compose = true
     }
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
+
+    defaultPropertiesFileName = "local.defaults.properties"
 }
 
 dependencies {
@@ -85,4 +92,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
+
+    // Google Maps
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.maps.android:maps-compose:6.4.1")
 }
