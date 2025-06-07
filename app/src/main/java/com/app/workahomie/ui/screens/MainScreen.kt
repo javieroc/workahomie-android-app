@@ -28,7 +28,7 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavScreen.Home.route) {
-                HostsScreen(hostsUiState = hostViewModel.hostsUiState)
+                HostsScreen(hostViewModel)
             }
             composable(BottomNavScreen.Explore.route) {
                 WishlistScreen()

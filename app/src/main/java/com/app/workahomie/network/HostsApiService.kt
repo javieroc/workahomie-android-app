@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 private const val BASE_URL = "https://workahomie.vercel.app"
 
@@ -20,7 +21,10 @@ private val retrofit = Retrofit.Builder()
 
 interface HostsApiService {
     @GET("hosts")
-    suspend fun getHosts(): HostsResponse
+    suspend fun getHosts(
+        @Query("offset") offset: Int? = 0,
+        @Query("limit") limit: Int? = 10
+    ): HostsResponse
 }
 
 object HostApi {
