@@ -37,7 +37,7 @@ fun HostsScreen(
         floatingActionButton = {
             ToggleViewButton(
                 isMapView = isMapView,
-                onClick = { viewModel.toggleView() }
+                onToggle = { viewModel.toggleView() }
             )
         }
     ) {
