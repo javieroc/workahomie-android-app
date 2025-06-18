@@ -1,6 +1,7 @@
 package com.app.workahomie
 
 import android.app.Activity
+import com.app.workahomie.network.HostApi
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
@@ -29,6 +30,7 @@ class Auth0Client(
         WebAuthProvider.login(auth0)
             .withScheme(scheme)
             .withScope("openid profile email")
+            .withAudience("https://workahomie.api.com")
             .start(activity, object : Callback<Credentials, AuthenticationException> {
                 override fun onFailure(error: AuthenticationException) {
                     onFailure(error.getDescription())
@@ -38,6 +40,7 @@ class Auth0Client(
                     credentialsManager.saveCredentials(result)
 
                     val token = result.accessToken
+                    HostApi.setToken(token)
                     authApiClient.userInfo(token)
                         .start(object : Callback<UserProfile, AuthenticationException> {
                             override fun onFailure(error: AuthenticationException) {
@@ -90,7 +93,7 @@ class Auth0Client(
 
             override fun onSuccess(result: Credentials) {
                 val token = result.accessToken
-
+                HostApi.setToken(token)
                 authApiClient.userInfo(token)
                     .start(object : Callback<UserProfile, AuthenticationException> {
                         override fun onFailure(error: AuthenticationException) {
