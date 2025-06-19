@@ -1,13 +1,17 @@
 package com.app.workahomie.network
 
 import com.app.workahomie.data.HostsResponse
+import com.app.workahomie.data.WishlistDto
 import com.app.workahomie.data.WishlistsResponse
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 private const val BASE_URL = "https://workahomie.vercel.app"
@@ -17,7 +21,7 @@ private val json = Json {
 }
 
 interface HostsApiService {
-    @GET("hosts")
+    @GET("/hosts/wishlisted")
     suspend fun getHosts(
         @Query("offset") offset: Int? = 0,
         @Query("limit") limit: Int? = 10
@@ -28,6 +32,12 @@ interface HostsApiService {
         @Query("offset") offset: Int? = 0,
         @Query("limit") limit: Int? = 10
     ): WishlistsResponse
+
+    @POST("/wishlists/add")
+    suspend fun addToWishlist(@Body dto: WishlistDto)
+
+    @HTTP(method = "DELETE", path = "/wishlists/remove", hasBody = true)
+    suspend fun removeFromWishlist(@Body dto: WishlistDto)
 }
 
 

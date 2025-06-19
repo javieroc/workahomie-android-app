@@ -33,6 +33,10 @@ fun HostsScreen(
     val isPaginating = viewModel.isPaginating
     val isMapView = viewModel.isMapView
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshHosts()
+    }
+
     Scaffold(
         floatingActionButton = {
             ToggleViewButton(

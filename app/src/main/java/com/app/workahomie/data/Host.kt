@@ -18,7 +18,8 @@ data class Host(
     val address: String,
     val location: Location,
     val facilities: List<String>,
-    val pictures: List<String>
+    val pictures: List<String>,
+    var isWishlisted: Boolean? = false
 )
 
 @Serializable

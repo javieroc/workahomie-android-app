@@ -1,6 +1,5 @@
 package com.app.workahomie.models
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -51,16 +50,15 @@ class HostViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = HostApi.retrofitService.getHosts(offset = offset, limit = limit)
-                Log.d("Pagination", "Fetched ${response.data.size} hosts at offset $offset")
                 val newHosts = response.data
 
                 if (newHosts.isEmpty()) {
                     isLastPage = true
                 } else {
                     loadedHosts.addAll(newHosts)
-                    hostsUiState = HostsUiState.Success(loadedHosts.toList())
                     offset += limit
                 }
+                hostsUiState = HostsUiState.Success(loadedHosts.toList())
             } catch (e: IOException) {
                 hostsUiState = HostsUiState.Error
             } catch (e: HttpException) {
@@ -69,5 +67,13 @@ class HostViewModel : ViewModel() {
                 isPaginating = false
             }
         }
+    }
+
+    fun refreshHosts() {
+        offset = 0
+        isLastPage = false
+        loadedHosts.clear()
+        hostsUiState = HostsUiState.Loading
+        loadMoreHosts()
     }
 }

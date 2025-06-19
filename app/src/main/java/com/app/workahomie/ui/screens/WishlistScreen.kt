@@ -1,7 +1,7 @@
 package com.app.workahomie.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,11 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,19 +23,31 @@ import com.app.workahomie.models.WishlistUiState
 import com.app.workahomie.models.WishlistViewModel
 import com.app.workahomie.ui.components.WishlistCard
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WishlistScreen(viewModel: WishlistViewModel = viewModel()) {
     val uiState = viewModel.wishlistUiState
     val isPaginating = viewModel.isPaginating
 
-    when (uiState) {
-        is WishlistUiState.Loading -> LoadingScreen()
-        is WishlistUiState.Success -> Wishlist(
-            hosts = uiState.hosts,
-            isPaginating = isPaginating,
-            onLoadMore = { viewModel.loadMoreWishlistHosts() }
-        )
-        is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
+    LaunchedEffect(Unit) {
+        viewModel.refreshWishlist()
+    }
+
+    Scaffold {
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when (uiState) {
+                is WishlistUiState.Loading -> LoadingScreen()
+                is WishlistUiState.Success -> Wishlist(
+                    hosts = uiState.hosts,
+                    isPaginating = isPaginating,
+                    onLoadMore = { viewModel.loadMoreWishlistHosts() }
+                )
+                is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
+            }
+        }
     }
 }
 
@@ -79,13 +92,5 @@ fun Wishlist(
                 )
             }
         }
-    }
-}
-
-
-@Composable
-fun LoadingScreen() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
     }
 }

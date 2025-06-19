@@ -19,13 +19,18 @@ import androidx.compose.ui.unit.*
 import coil3.compose.AsyncImage
 import com.app.workahomie.R
 import com.app.workahomie.data.Host
+import com.app.workahomie.data.WishlistDto
+import com.app.workahomie.network.HostApi
+import kotlinx.coroutines.launch
 
 @Composable
 fun HostCard(
     host: Host,
     modifier: Modifier = Modifier
 ) {
-    var isFavorited by remember { mutableStateOf(false) }
+    var isWishlisted by remember { mutableStateOf(host.isWishlisted ?: false) }
+    var isProcessing by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
     val images = host.profileImages + host.pictures
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
 
@@ -54,7 +59,28 @@ fun HostCard(
                 }
 
                 IconButton(
-                    onClick = { isFavorited = !isFavorited },
+                    onClick = {
+                        if (isProcessing) return@IconButton
+
+                        isProcessing = true
+                        isWishlisted = !isWishlisted // Optimistic update
+
+                        coroutineScope.launch {
+                            try {
+                                val dto = WishlistDto(host.id)
+                                if (isWishlisted) {
+                                    HostApi.retrofitService.addToWishlist(dto)
+                                } else {
+                                    HostApi.retrofitService.removeFromWishlist(dto)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                isWishlisted = !isWishlisted // Rollback on failure
+                            } finally {
+                                isProcessing = false
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(10.dp)
@@ -63,7 +89,7 @@ fun HostCard(
                 ) {
                     Icon(
                         painter = painterResource(
-                            id = if (isFavorited) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
+                            id = if (isWishlisted) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
                         ),
                         contentDescription = "Favorite",
                         tint = Color.White

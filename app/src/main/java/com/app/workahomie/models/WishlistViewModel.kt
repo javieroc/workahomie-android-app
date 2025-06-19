@@ -45,12 +45,11 @@ class WishlistViewModel : ViewModel() {
 
                 if (newHosts.isEmpty()) {
                     isLastPage = true
-                    wishlistUiState = WishlistUiState.Success(loadedHosts.toList())
                 } else {
                     loadedHosts.addAll(newHosts)
-                    wishlistUiState = WishlistUiState.Success(loadedHosts.toList())
                     offset += limit
                 }
+                wishlistUiState = WishlistUiState.Success(loadedHosts.toList())
             } catch (e: IOException) {
                 wishlistUiState = WishlistUiState.Error
             } catch (e: HttpException) {
@@ -61,5 +60,13 @@ class WishlistViewModel : ViewModel() {
                 isPaginating = false
             }
         }
+    }
+
+    fun refreshWishlist() {
+        offset = 0
+        isLastPage = false
+        loadedHosts.clear()
+        wishlistUiState = WishlistUiState.Loading
+        loadMoreWishlistHosts()
     }
 }
