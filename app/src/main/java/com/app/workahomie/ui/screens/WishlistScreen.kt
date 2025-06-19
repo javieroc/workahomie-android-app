@@ -21,11 +21,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.data.WishlistHost
 import com.app.workahomie.models.WishlistUiState
 import com.app.workahomie.models.WishlistViewModel
+import com.app.workahomie.ui.components.LoadingItem
 import com.app.workahomie.ui.components.WishlistCard
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun WishlistScreen(viewModel: WishlistViewModel = viewModel()) {
+fun WishlistScreen(viewModel: WishlistViewModel = viewModel(), modifier: Modifier = Modifier,) {
     val uiState = viewModel.wishlistUiState
     val isPaginating = viewModel.isPaginating
 
@@ -33,13 +34,13 @@ fun WishlistScreen(viewModel: WishlistViewModel = viewModel()) {
         viewModel.refreshWishlist()
     }
 
-    Scaffold {
+    Scaffold { padding ->
         Surface(
             color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(padding),
         ) {
             when (uiState) {
-                is WishlistUiState.Loading -> LoadingScreen()
+                is WishlistUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
                 is WishlistUiState.Success -> Wishlist(
                     hosts = uiState.hosts,
                     isPaginating = isPaginating,
