@@ -2,6 +2,7 @@ package com.app.workahomie.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,9 +13,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,14 +42,27 @@ fun WishlistScreen(viewModel: WishlistViewModel = viewModel(), modifier: Modifie
             color = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            when (uiState) {
-                is WishlistUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-                is WishlistUiState.Success -> Wishlist(
-                    hosts = uiState.hosts,
-                    isPaginating = isPaginating,
-                    onLoadMore = { viewModel.loadMoreWishlistHosts() }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = "Wishlist",
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .align(Alignment.Start)
                 )
-                is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
+                when (uiState) {
+                    is WishlistUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+                    is WishlistUiState.Success -> Wishlist(
+                        hosts = uiState.hosts,
+                        isPaginating = isPaginating,
+                        onLoadMore = { viewModel.loadMoreWishlistHosts() }
+                    )
+                    is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
+                }
             }
         }
     }
@@ -75,8 +91,7 @@ fun Wishlist(
     LazyColumn(
         state = listState,
         modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxSize(),
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
