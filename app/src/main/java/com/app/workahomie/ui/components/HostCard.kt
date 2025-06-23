@@ -26,7 +26,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HostCard(
     host: Host,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     var isWishlisted by remember { mutableStateOf(host.isWishlisted ?: false) }
     var isProcessing by remember { mutableStateOf(false) }
@@ -40,7 +41,7 @@ fun HostCard(
         modifier = modifier
             .width(250.dp)
             .wrapContentHeight()
-            .clickable { /* handle click */ }
+            .clickable { onClick() }
     ) {
         Column {
             Box {

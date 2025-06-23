@@ -1,6 +1,7 @@
 package com.app.workahomie.ui.screens
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,18 +18,21 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostsUiState
 import com.app.workahomie.ui.components.HostCard
 import com.app.workahomie.ui.components.LoadingItem
 import com.app.workahomie.ui.components.ToggleViewButton
+import com.google.gson.Gson
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HostsScreen(
-    viewModel: HostViewModel = viewModel(),
     modifier: Modifier = Modifier,
+    viewModel: HostViewModel = viewModel(),
+    navController: NavController,
 ) {
     val hostsUiState = viewModel.hostsUiState
     val isPaginating = viewModel.isPaginating
@@ -63,7 +67,11 @@ fun HostsScreen(
                             hostsUiState.hosts,
                             isPaginating = isPaginating,
                             onLoadMore = { viewModel.loadMoreHosts() },
-                            modifier = modifier.fillMaxWidth()
+                            onHostClick = { host ->
+                                val hostJson = Uri.encode(Gson().toJson(host))
+                                navController.navigate("hostDetails/$hostJson")
+                            },
+                            modifier = modifier.fillMaxWidth(),
                         )
                     }
                 }
@@ -77,6 +85,7 @@ fun HostsScreen(
 fun HostsListScreen(
     hosts: List<Host>,
     modifier: Modifier = Modifier,
+    onHostClick: (Host) -> Unit,
     isPaginating: Boolean,
     onLoadMore: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -106,7 +115,8 @@ fun HostsListScreen(
                 host = host,
                 modifier = Modifier
                     .padding(vertical = 4.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                onClick = { onHostClick(host) },
             )
         }
 

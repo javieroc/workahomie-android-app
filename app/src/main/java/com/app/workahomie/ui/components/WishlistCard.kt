@@ -1,5 +1,6 @@
 package com.app.workahomie.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +25,15 @@ import coil3.request.crossfade
 import com.app.workahomie.data.WishlistHost
 
 @Composable
-fun WishlistCard(host: WishlistHost) {
+fun WishlistCard(
+    host: WishlistHost
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+            .height(120.dp)
+            .clickable {},
+        elevation = CardDefaults.cardElevation(4.dp),
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             AsyncImage(

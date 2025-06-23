@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.app.workahomie.data.WishlistHost
 import com.app.workahomie.models.WishlistUiState
 import com.app.workahomie.models.WishlistViewModel
@@ -29,7 +30,10 @@ import com.app.workahomie.ui.components.WishlistCard
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun WishlistScreen(viewModel: WishlistViewModel = viewModel(), modifier: Modifier = Modifier,) {
+fun WishlistScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WishlistViewModel = viewModel(),
+) {
     val uiState = viewModel.wishlistUiState
     val isPaginating = viewModel.isPaginating
 
@@ -37,10 +41,10 @@ fun WishlistScreen(viewModel: WishlistViewModel = viewModel(), modifier: Modifie
         viewModel.refreshWishlist()
     }
 
-    Scaffold { padding ->
+    Scaffold {
         Surface(
             color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.fillMaxSize().padding(padding),
+            modifier = Modifier.fillMaxSize(),
         ) {
             Column(
                 modifier = Modifier
@@ -59,7 +63,7 @@ fun WishlistScreen(viewModel: WishlistViewModel = viewModel(), modifier: Modifie
                     is WishlistUiState.Success -> Wishlist(
                         hosts = uiState.hosts,
                         isPaginating = isPaginating,
-                        onLoadMore = { viewModel.loadMoreWishlistHosts() }
+                        onLoadMore = { viewModel.loadMoreWishlistHosts() },
                     )
                     is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
                 }
@@ -71,9 +75,10 @@ fun WishlistScreen(viewModel: WishlistViewModel = viewModel(), modifier: Modifie
 @Composable
 fun Wishlist(
     hosts: List<WishlistHost>,
+    modifier: Modifier = Modifier,
     isPaginating: Boolean,
     onLoadMore: () -> Unit,
-    modifier: Modifier = Modifier
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val listState = rememberLazyListState()
 
@@ -92,11 +97,11 @@ fun Wishlist(
         state = listState,
         modifier = modifier
             .fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 16.dp),
+        contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(hosts, key = { it.id }) { host ->
-            WishlistCard(host)
+            WishlistCard(host=host)
         }
 
         if (isPaginating) {
