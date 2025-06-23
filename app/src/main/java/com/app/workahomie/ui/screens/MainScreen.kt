@@ -42,7 +42,7 @@ fun MainScreen(
                 HostDetailsScreen(host = host, navController = navController)
             }
             composable(BottomNavScreen.Explore.route) {
-                WishlistScreen()
+                WishlistScreen(navController = navController)
             }
             composable(BottomNavScreen.Profile.route) {
                 ProfileScreen(authViewModel)

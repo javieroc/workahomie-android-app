@@ -1,6 +1,7 @@
 package com.app.workahomie.ui.screens
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,12 +28,14 @@ import com.app.workahomie.models.WishlistUiState
 import com.app.workahomie.models.WishlistViewModel
 import com.app.workahomie.ui.components.LoadingItem
 import com.app.workahomie.ui.components.WishlistCard
+import com.google.gson.Gson
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WishlistScreen(
     modifier: Modifier = Modifier,
     viewModel: WishlistViewModel = viewModel(),
+    navController: NavController,
 ) {
     val uiState = viewModel.wishlistUiState
     val isPaginating = viewModel.isPaginating
@@ -64,6 +67,10 @@ fun WishlistScreen(
                         hosts = uiState.hosts,
                         isPaginating = isPaginating,
                         onLoadMore = { viewModel.loadMoreHosts() },
+                        onHostClick = { host ->
+                            val hostJson = Uri.encode(Gson().toJson(host))
+                            navController.navigate("hostDetails/$hostJson")
+                        },
                     )
                     is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
                 }
@@ -76,6 +83,7 @@ fun WishlistScreen(
 fun Wishlist(
     hosts: List<Host>,
     modifier: Modifier = Modifier,
+    onHostClick: (Host) -> Unit,
     isPaginating: Boolean,
     onLoadMore: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -101,7 +109,10 @@ fun Wishlist(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(hosts, key = { it.id }) { host ->
-            WishlistCard(host=host)
+            WishlistCard(
+                host=host,
+                onClick = { onHostClick(host) },
+            )
         }
 
         if (isPaginating) {

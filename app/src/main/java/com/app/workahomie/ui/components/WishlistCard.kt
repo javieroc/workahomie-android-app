@@ -26,13 +26,14 @@ import com.app.workahomie.data.Host
 
 @Composable
 fun WishlistCard(
-    host: Host
+    host: Host,
+    onClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .clickable {},
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
