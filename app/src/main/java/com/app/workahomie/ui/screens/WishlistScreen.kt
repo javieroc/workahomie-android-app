@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.app.workahomie.data.WishlistHost
+import com.app.workahomie.data.Host
 import com.app.workahomie.models.WishlistUiState
 import com.app.workahomie.models.WishlistViewModel
 import com.app.workahomie.ui.components.LoadingItem
@@ -63,7 +63,7 @@ fun WishlistScreen(
                     is WishlistUiState.Success -> Wishlist(
                         hosts = uiState.hosts,
                         isPaginating = isPaginating,
-                        onLoadMore = { viewModel.loadMoreWishlistHosts() },
+                        onLoadMore = { viewModel.loadMoreHosts() },
                     )
                     is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
                 }
@@ -74,7 +74,7 @@ fun WishlistScreen(
 
 @Composable
 fun Wishlist(
-    hosts: List<WishlistHost>,
+    hosts: List<Host>,
     modifier: Modifier = Modifier,
     isPaginating: Boolean,
     onLoadMore: () -> Unit,

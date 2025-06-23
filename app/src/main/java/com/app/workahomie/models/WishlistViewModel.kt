@@ -4,14 +4,14 @@ import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.workahomie.data.WishlistHost
+import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
 sealed interface WishlistUiState {
-    data class Success(val hosts: List<WishlistHost>) : WishlistUiState
+    data class Success(val hosts: List<Host>) : WishlistUiState
     object Error : WishlistUiState
     object Loading : WishlistUiState
 }
@@ -24,16 +24,16 @@ class WishlistViewModel : ViewModel() {
         private set
 
     private var isLastPage = false
-    private val loadedHosts = mutableListOf<WishlistHost>()
+    private val loadedHosts = mutableListOf<Host>()
 
     var wishlistUiState: WishlistUiState by mutableStateOf(WishlistUiState.Loading)
         private set
 
     init {
-        loadMoreWishlistHosts()
+        loadMoreHosts()
     }
 
-    fun loadMoreWishlistHosts() {
+    fun loadMoreHosts() {
         if (isPaginating || isLastPage) return
 
         isPaginating = true
@@ -67,6 +67,6 @@ class WishlistViewModel : ViewModel() {
         isLastPage = false
         loadedHosts.clear()
         wishlistUiState = WishlistUiState.Loading
-        loadMoreWishlistHosts()
+        loadMoreHosts()
     }
 }

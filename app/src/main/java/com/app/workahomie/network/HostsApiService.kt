@@ -2,7 +2,6 @@ package com.app.workahomie.network
 
 import com.app.workahomie.data.HostsResponse
 import com.app.workahomie.data.WishlistDto
-import com.app.workahomie.data.WishlistsResponse
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -31,7 +30,7 @@ interface HostsApiService {
     suspend fun getWishlist(
         @Query("offset") offset: Int? = 0,
         @Query("limit") limit: Int? = 10
-    ): WishlistsResponse
+    ): HostsResponse
 
     @POST("/wishlists/add")
     suspend fun addToWishlist(@Body dto: WishlistDto)
