@@ -1,12 +1,18 @@
 package com.app.workahomie.models
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -32,6 +38,9 @@ class HostViewModel : ViewModel() {
         private set
 
     var isMapView by mutableStateOf(false)
+        private set
+
+    var userLocation = mutableStateOf<LatLng?>(null)
         private set
 
     init {
@@ -75,5 +84,21 @@ class HostViewModel : ViewModel() {
         loadedHosts.clear()
         hostsUiState = HostsUiState.Loading
         loadMoreHosts()
+    }
+
+    fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    location?.let {
+                        userLocation.value = LatLng(it.latitude, it.longitude)
+                    }
+                }
+            } catch (e: SecurityException) {
+                Log.e("Error", "Permission for location access was revoked: ${e.localizedMessage}")
+            }
+        } else {
+            Log.e("Error", "Location permission is not granted.")
+        }
     }
 }
