@@ -2,6 +2,7 @@ package com.app.workahomie.ui.screens
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostsUiState
 import com.app.workahomie.ui.components.HostCard
 import com.app.workahomie.ui.components.LoadingItem
+import com.app.workahomie.ui.components.SearchBar
 import com.app.workahomie.ui.components.ToggleViewButton
 import com.google.gson.Gson
 
@@ -54,28 +56,40 @@ fun HostsScreen(
             color = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize(),
         ) {
-            when (hostsUiState) {
-                is HostsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-                is HostsUiState.Success -> {
-                    if (isMapView) {
-                        HostsMapScreen(
-                            hosts = hostsUiState.hosts,
-                            modifier = modifier
-                        )
-                    } else {
-                        HostsListScreen(
-                            hostsUiState.hosts,
-                            isPaginating = isPaginating,
-                            onLoadMore = { viewModel.loadMoreHosts() },
-                            onHostClick = { host ->
-                                val hostJson = Uri.encode(Gson().toJson(host))
-                                navController.navigate("hostDetails/$hostJson")
-                            },
-                            modifier = modifier.fillMaxWidth(),
-                        )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp)
+            ) {
+                SearchBar(
+                    onPlaceSelected = { placeId ->
+                        println("Selected Place ID: $placeId")
                     }
+                )
+
+                when (hostsUiState) {
+                    is HostsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+                    is HostsUiState.Success -> {
+                        if (isMapView) {
+                            HostsMapScreen(
+                                hosts = hostsUiState.hosts,
+                                modifier = modifier
+                            )
+                        } else {
+                            HostsListScreen(
+                                hostsUiState.hosts,
+                                isPaginating = isPaginating,
+                                onLoadMore = { viewModel.loadMoreHosts() },
+                                onHostClick = { host ->
+                                    val hostJson = Uri.encode(Gson().toJson(host))
+                                    navController.navigate("hostDetails/$hostJson")
+                                },
+                                modifier = modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                    is HostsUiState.Error -> ErrorScreen( error = "Failed to load", modifier = modifier.fillMaxSize())
                 }
-                is HostsUiState.Error -> ErrorScreen( error = "Failed to load", modifier = modifier.fillMaxSize())
             }
         }
     }
