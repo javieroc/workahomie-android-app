@@ -14,8 +14,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.data.Host
+import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.MapViewModel
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -28,10 +30,12 @@ import com.google.maps.android.compose.rememberCameraPositionState
 fun HostsMapScreen(
     hosts: List<Host>,
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel = viewModel()
+    mapViewModel: MapViewModel = viewModel(),
+    hostViewModel: HostViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val userLocation by mapViewModel.userLocation
+    val selectedLocation by hostViewModel.selectedLocation
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
     val cameraPositionState = rememberCameraPositionState {
@@ -62,6 +66,18 @@ fun HostsMapScreen(
         }
     }
 
+    LaunchedEffect(selectedLocation, userLocation) {
+        val target = selectedLocation ?: userLocation
+        target?.let {
+            cameraPositionState.move(
+                update = CameraUpdateFactory.newCameraPosition(
+                    CameraPosition.fromLatLngZoom(it, 12f)
+                ),
+                // durationMs = 1000
+            )
+        }
+    }
+
     GoogleMap(
         modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
@@ -72,7 +88,6 @@ fun HostsMapScreen(
                 title = "You are here",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
             )
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 10f)
         }
 
         hosts.forEach { host ->
