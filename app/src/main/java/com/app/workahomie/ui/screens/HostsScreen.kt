@@ -39,9 +39,12 @@ fun HostsScreen(
     val hostsUiState = viewModel.hostsUiState
     val isPaginating = viewModel.isPaginating
     val isMapView = viewModel.isMapView
+    val selectedLocation = viewModel.selectedLocation.value
 
-    LaunchedEffect(Unit) {
-        viewModel.refreshHosts()
+    LaunchedEffect(selectedLocation) {
+        selectedLocation?.let {
+            viewModel.refreshHosts()
+        }
     }
 
     Scaffold(
@@ -63,7 +66,7 @@ fun HostsScreen(
             ) {
                 SearchBar(
                     onPlaceSelected = { placeId ->
-                        println("Selected Place ID: $placeId")
+                        viewModel.fetchLatLngFromPlaceId(placeId, context = navController.context)
                     }
                 )
 

@@ -8,15 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
 
 class MapViewModel: ViewModel() {
     var userLocation = mutableStateOf<LatLng?>(null)
-        private set
-
-    var selectedLocation = mutableStateOf<LatLng?>(null)
         private set
 
     fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
@@ -33,25 +27,5 @@ class MapViewModel: ViewModel() {
         } else {
             Log.e("Error", "Location permission is not granted.")
         }
-    }
-
-    fun fetchLatLngFromPlaceId(placeId: String, context: Context) {
-        val placesClient = Places.createClient(context)
-
-        val placeFields = listOf(Place.Field.LAT_LNG)
-        val request = FetchPlaceRequest.builder(placeId, placeFields).build()
-
-        placesClient.fetchPlace(request)
-            .addOnSuccessListener { response ->
-                val latLng = response.place.latLng
-                if (latLng != null) {
-                    selectedLocation.value = latLng
-                } else {
-                    Log.e("Error", "LatLng is null for placeId: $placeId")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Error", "Failed to fetch place details")
-            }
     }
 }

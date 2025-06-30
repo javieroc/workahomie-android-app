@@ -23,13 +23,15 @@ interface HostsApiService {
     @GET("/hosts/wishlisted")
     suspend fun getHosts(
         @Query("offset") offset: Int? = 0,
-        @Query("limit") limit: Int? = 10
+        @Query("limit") limit: Int? = 10,
+        @Query("lat") lat: Double? = null,
+        @Query("lng") lng: Double? = null
     ): HostsResponse
 
     @GET("/wishlists/full")
     suspend fun getWishlist(
         @Query("offset") offset: Int? = 0,
-        @Query("limit") limit: Int? = 10
+        @Query("limit") limit: Int? = 10,
     ): HostsResponse
 
     @POST("/wishlists/add")

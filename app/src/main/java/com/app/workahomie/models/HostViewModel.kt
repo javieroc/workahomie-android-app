@@ -1,18 +1,18 @@
 package com.app.workahomie.models
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -40,7 +40,7 @@ class HostViewModel : ViewModel() {
     var isMapView by mutableStateOf(false)
         private set
 
-    var userLocation = mutableStateOf<LatLng?>(null)
+    var selectedLocation = mutableStateOf<LatLng?>(null)
         private set
 
     init {
@@ -58,7 +58,13 @@ class HostViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = HostApi.retrofitService.getHosts(offset = offset, limit = limit)
+                val latLng = selectedLocation.value
+                val response = HostApi.retrofitService.getHosts(
+                    offset = offset,
+                    limit = limit,
+                    lat = latLng?.latitude,
+                    lng = latLng?.longitude
+                )
                 val newHosts = response.data
 
                 if (newHosts.isEmpty()) {
@@ -86,19 +92,23 @@ class HostViewModel : ViewModel() {
         loadMoreHosts()
     }
 
-    fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            try {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        userLocation.value = LatLng(it.latitude, it.longitude)
-                    }
+    fun fetchLatLngFromPlaceId(placeId: String, context: Context) {
+        val placesClient = Places.createClient(context)
+
+        val placeFields = listOf(Place.Field.LAT_LNG)
+        val request = FetchPlaceRequest.builder(placeId, placeFields).build()
+
+        placesClient.fetchPlace(request)
+            .addOnSuccessListener { response ->
+                val latLng = response.place.latLng
+                if (latLng != null) {
+                    selectedLocation.value = latLng
+                } else {
+                    Log.e("Error", "LatLng is null for placeId: $placeId")
                 }
-            } catch (e: SecurityException) {
-                Log.e("Error", "Permission for location access was revoked: ${e.localizedMessage}")
             }
-        } else {
-            Log.e("Error", "Location permission is not granted.")
-        }
+            .addOnFailureListener { exception ->
+                Log.e("Error", "Failed to fetch place details")
+            }
     }
 }
