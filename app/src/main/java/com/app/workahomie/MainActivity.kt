@@ -1,8 +1,6 @@
 package com.app.workahomie
 
-import com.app.workahomie.BuildConfig
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,7 +17,7 @@ class MainActivity : ComponentActivity() {
 
         val domain = getString(R.string.com_auth0_domain)
         val scheme = getString(R.string.com_auth0_scheme)
-        val clientId = "d50E057uTWRu1R5sbnEauIqUubBP1kCf"
+        val clientId = BuildConfig.AUTH0_CLIENT_ID
 
         val auth0Client = Auth0Client(this, domain, clientId, scheme)
         val authViewModel = ViewModelProvider(this, AuthViewModelFactory(auth0Client))[AuthViewModel::class.java]

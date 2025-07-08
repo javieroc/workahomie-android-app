@@ -12,7 +12,7 @@ import java.io.IOException
 
 sealed interface WishlistUiState {
     data class Success(val hosts: List<Host>) : WishlistUiState
-    object Error : WishlistUiState
+    data class Error(val message: String) : WishlistUiState
     object Loading : WishlistUiState
 }
 
@@ -51,11 +51,12 @@ class WishlistViewModel : ViewModel() {
                 }
                 wishlistUiState = WishlistUiState.Success(loadedHosts.toList())
             } catch (e: IOException) {
-                wishlistUiState = WishlistUiState.Error
+                wishlistUiState = WishlistUiState.Error("Network error")
             } catch (e: HttpException) {
-                println(e.response())
-                Log.e("Error", e.message())
-                wishlistUiState = WishlistUiState.Error
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorMessage = errorBody ?: e.message()
+                Log.e("Error", errorMessage)
+                wishlistUiState = WishlistUiState.Error(errorMessage)
             } finally {
                 isPaginating = false
             }

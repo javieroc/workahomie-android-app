@@ -91,7 +91,7 @@ fun HostsScreen(
                             )
                         }
                     }
-                    is HostsUiState.Error -> ErrorScreen( error = "Failed to load", modifier = modifier.fillMaxSize())
+                    is HostsUiState.Error -> ErrorScreen( error = hostsUiState.message, modifier = modifier.fillMaxSize())
                 }
             }
         }

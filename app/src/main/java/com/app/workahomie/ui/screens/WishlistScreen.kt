@@ -72,7 +72,7 @@ fun WishlistScreen(
                             navController.navigate("hostDetails/$hostJson")
                         },
                     )
-                    is WishlistUiState.Error -> ErrorScreen(error = "Could not load wishlist")
+                    is WishlistUiState.Error -> ErrorScreen(error = uiState.message)
                 }
             }
         }

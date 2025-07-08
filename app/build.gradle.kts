@@ -23,6 +23,7 @@ android {
         manifestPlaceholders["auth0Scheme"] = "@string/com_auth0_scheme"
 
         buildConfigField("String", "MAPS_API_KEY", "\"${project.findProperty("MAPS_API_KEY")}\"")
+        buildConfigField("String", "AUTH0_CLIENT_ID", "\"${project.findProperty("AUTH0_CLIENT_ID")}\"")
     }
     buildTypes {
         release {

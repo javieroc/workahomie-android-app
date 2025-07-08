@@ -19,7 +19,7 @@ import java.io.IOException
 
 sealed interface HostsUiState {
     data class Success(val hosts: List<Host>) : HostsUiState
-    object Error : HostsUiState
+    data class Error(val message: String) : HostsUiState
     object Loading : HostsUiState
 }
 
@@ -75,9 +75,12 @@ class HostViewModel : ViewModel() {
                 }
                 hostsUiState = HostsUiState.Success(loadedHosts.toList())
             } catch (e: IOException) {
-                hostsUiState = HostsUiState.Error
+                hostsUiState = HostsUiState.Error("Network error")
             } catch (e: HttpException) {
-                hostsUiState = HostsUiState.Error
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorMessage = errorBody ?: e.message()
+                Log.e("Error", errorMessage)
+                hostsUiState = HostsUiState.Error(errorMessage)
             } finally {
                 isPaginating = false
             }
