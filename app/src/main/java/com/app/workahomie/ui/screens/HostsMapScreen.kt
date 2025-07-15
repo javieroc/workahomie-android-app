@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.MapViewModel
+import com.app.workahomie.ui.components.CustomMapMarker
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -91,11 +92,10 @@ fun HostsMapScreen(
         }
 
         hosts.forEach { host ->
-            Marker(
-                state = MarkerState(
-                    position = LatLng(host.location.coordinates[1], host.location.coordinates[0])
-                ),
-                title = host.firstName
+            CustomMapMarker(
+                location = LatLng(host.location.coordinates[1], host.location.coordinates[0]),
+                occupation = host.occupation,
+                onClick = {},
             )
         }
     }
