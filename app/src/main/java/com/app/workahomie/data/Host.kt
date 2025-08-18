@@ -19,6 +19,7 @@ data class Host(
     val location: Location,
     val facilities: List<String>,
     val pictures: List<String>,
+    val phone: String? = null,
     var isWishlisted: Boolean? = false
 )
 

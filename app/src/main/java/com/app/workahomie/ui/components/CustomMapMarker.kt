@@ -1,6 +1,7 @@
 package com.app.workahomie.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,7 +41,8 @@ fun CustomMapMarker(
         Row(
             modifier = Modifier
                 .background(Color.White, RoundedCornerShape(8.dp, 8.dp, 8.dp, 0.dp))
-                .padding(4.dp),
+                .padding(4.dp)
+                .border(2.dp, Color.Black),
             verticalAlignment = Alignment.CenterVertically
         ) {
             occupationIcons[occupation]?.let {
