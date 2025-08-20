@@ -24,12 +24,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import android.widget.Toast
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,19 +41,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
+import com.app.workahomie.network.HostApi
 import com.app.workahomie.ui.components.RequestToStayForm
+import kotlinx.coroutines.launch
+import com.app.workahomie.models.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HostDetailsScreen(
     host: Host,
     modifier: Modifier = Modifier,
     navController: NavController,
+    authViewModel: AuthViewModel,
 ) {
     val images = host.pictures
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LazyColumn(
         modifier = modifier
@@ -195,8 +201,28 @@ fun HostDetailsScreen(
         item {
             RequestToStayForm(
                 onSubmit = { checkIn, checkOut, message ->
-                    // TODO: Handle submission, e.g., call a ViewModel method
-                    println("Booking submitted: $checkIn, $checkOut, $message")
+                    val userProfile = authViewModel.userProfile
+                    val userName = userProfile?.name
+                    val userEmail = userProfile?.email
+                    val userAvatar = userProfile?.pictureURL
+
+                    coroutineScope.launch {
+                        try {
+                            val dto = CreateRequestDto(
+                                checkIn = checkIn,
+                                checkOut = checkOut,
+                                message = message,
+                                userName = userName,
+                                userEmail = userEmail,
+                                userAvatar = userAvatar
+                            )
+                            HostApi.retrofitService.createRequest(host.id, dto)
+                            Toast.makeText(context, "Request sent successfully!", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Failed to send request.", Toast.LENGTH_SHORT).show()
+                            e.printStackTrace()
+                        }
+                    }
                 }
             )
         }

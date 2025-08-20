@@ -39,7 +39,7 @@ fun MainScreen(
             ) { backStackEntry ->
                 val hostJson = backStackEntry.arguments?.getString("hostJson")
                 val host = Gson().fromJson(hostJson, Host::class.java)
-                HostDetailsScreen(host = host, navController = navController)
+                HostDetailsScreen(host = host, navController = navController, authViewModel = authViewModel)
             }
             composable(BottomNavScreen.Explore.route) {
                 WishlistScreen(navController = navController)
