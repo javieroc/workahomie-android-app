@@ -2,6 +2,7 @@ package com.app.workahomie.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,13 +25,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import android.widget.Toast
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,14 +40,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
-import com.app.workahomie.network.HostApi
-import com.app.workahomie.ui.components.RequestToStayForm
-import kotlinx.coroutines.launch
 import com.app.workahomie.models.AuthViewModel
+import com.app.workahomie.models.CreateRequestUiState
+import com.app.workahomie.models.HostViewModel
+import com.app.workahomie.ui.components.RequestToStayForm
 
 @Composable
 fun HostDetailsScreen(
@@ -54,11 +55,26 @@ fun HostDetailsScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     authViewModel: AuthViewModel,
+    hostViewModel: HostViewModel = viewModel(),
 ) {
     val images = host.pictures
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    val createRequestUiState = hostViewModel.createRequestUiState
+
+    LaunchedEffect(createRequestUiState) {
+        when (createRequestUiState) {
+            is CreateRequestUiState.Success -> {
+                Toast.makeText(context, "Request sent successfully!", Toast.LENGTH_SHORT).show()
+                hostViewModel.resetCreateRequestState()
+            }
+            is CreateRequestUiState.Error -> {
+                Toast.makeText(context, createRequestUiState.message, Toast.LENGTH_SHORT).show()
+                hostViewModel.resetCreateRequestState()
+            }
+            else -> {}
+        }
+    }
 
     LazyColumn(
         modifier = modifier
@@ -199,32 +215,24 @@ fun HostDetailsScreen(
         }
 
         item {
-            RequestToStayForm(
-                onSubmit = { checkIn, checkOut, message ->
-                    val userProfile = authViewModel.userProfile
-                    val userName = userProfile?.name
-                    val userEmail = userProfile?.email
-                    val userAvatar = userProfile?.pictureURL
-
-                    coroutineScope.launch {
-                        try {
-                            val dto = CreateRequestDto(
-                                checkIn = checkIn,
-                                checkOut = checkOut,
-                                message = message,
-                                userName = userName,
-                                userEmail = userEmail,
-                                userAvatar = userAvatar
-                            )
-                            HostApi.retrofitService.createRequest(host.id, dto)
-                            Toast.makeText(context, "Request sent successfully!", Toast.LENGTH_SHORT).show()
-                        } catch (e: Exception) {
-                            Toast.makeText(context, "Failed to send request.", Toast.LENGTH_SHORT).show()
-                            e.printStackTrace()
-                        }
+            if (createRequestUiState is CreateRequestUiState.Loading) {
+                CircularProgressIndicator()
+            } else {
+                RequestToStayForm(
+                    onSubmit = { checkIn, checkOut, message ->
+                        val userProfile = authViewModel.userProfile
+                        hostViewModel.createRequest(
+                            hostId = host.id,
+                            checkIn = checkIn,
+                            checkOut = checkOut,
+                            message = message,
+                            userName = userProfile?.name,
+                            userEmail = userProfile?.email,
+                            userAvatar = userProfile?.pictureURL
+                        )
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

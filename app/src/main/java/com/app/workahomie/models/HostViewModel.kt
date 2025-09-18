@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
 import com.google.android.gms.maps.model.LatLng
@@ -23,6 +24,13 @@ sealed interface HostsUiState {
     object Loading : HostsUiState
 }
 
+sealed interface CreateRequestUiState {
+    object Success : CreateRequestUiState
+    data class Error(val message: String) : CreateRequestUiState
+    object Loading : CreateRequestUiState
+    object Idle : CreateRequestUiState
+}
+
 class HostViewModel : ViewModel() {
     private var offset = 0
     private val limit = 10
@@ -37,6 +45,9 @@ class HostViewModel : ViewModel() {
     var hostsUiState: HostsUiState by mutableStateOf(HostsUiState.Loading)
         private set
 
+    var createRequestUiState: CreateRequestUiState by mutableStateOf(CreateRequestUiState.Idle)
+        private set
+
     var isMapView by mutableStateOf(false)
         private set
 
@@ -49,6 +60,38 @@ class HostViewModel : ViewModel() {
 
     fun toggleView() {
         isMapView = !isMapView
+    }
+
+    fun createRequest(
+        hostId: String,
+        checkIn: String,
+        checkOut: String,
+        message: String,
+        userName: String?,
+        userEmail: String?,
+        userAvatar: String?
+    ) {
+        viewModelScope.launch {
+            createRequestUiState = CreateRequestUiState.Loading
+            try {
+                val dto = CreateRequestDto(
+                    checkIn = checkIn,
+                    checkOut = checkOut,
+                    message = message,
+                    userName = userName,
+                    userEmail = userEmail,
+                    userAvatar = userAvatar
+                )
+                HostApi.retrofitService.createRequest(hostId, dto)
+                createRequestUiState = CreateRequestUiState.Success
+            } catch (e: Exception) {
+                createRequestUiState = CreateRequestUiState.Error("Failed to send request.")
+            }
+        }
+    }
+
+    fun resetCreateRequestState() {
+        createRequestUiState = CreateRequestUiState.Idle
     }
 
     fun loadMoreHosts() {
