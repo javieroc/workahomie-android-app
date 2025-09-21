@@ -2,6 +2,8 @@ package com.app.workahomie.network
 
 import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.HostsResponse
+import com.app.workahomie.data.ListResponse
+import com.app.workahomie.data.Request
 import com.app.workahomie.data.WishlistDto
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -35,6 +37,12 @@ interface HostsApiService {
         @Query("offset") offset: Int? = 0,
         @Query("limit") limit: Int? = 10,
     ): HostsResponse
+
+    @GET("/requests/incoming")
+    suspend fun getIncomingRequests(): ListResponse<Request>
+
+    @GET("/requests/outgoing")
+    suspend fun getOutgoingRequests(): ListResponse<Request>
 
     @POST("/hosts/{id}/requests")
     suspend fun createRequest(

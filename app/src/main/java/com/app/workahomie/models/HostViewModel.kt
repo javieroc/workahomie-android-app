@@ -21,14 +21,14 @@ import java.io.IOException
 sealed interface HostsUiState {
     data class Success(val hosts: List<Host>) : HostsUiState
     data class Error(val message: String) : HostsUiState
-    object Loading : HostsUiState
+    data object Loading : HostsUiState
 }
 
 sealed interface CreateRequestUiState {
-    object Success : CreateRequestUiState
+    data object Success : CreateRequestUiState
     data class Error(val message: String) : CreateRequestUiState
-    object Loading : CreateRequestUiState
-    object Idle : CreateRequestUiState
+    data object Loading : CreateRequestUiState
+    data object Idle : CreateRequestUiState
 }
 
 class HostViewModel : ViewModel() {
