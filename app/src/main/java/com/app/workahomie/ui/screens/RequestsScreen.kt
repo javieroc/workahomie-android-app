@@ -33,6 +33,7 @@ import coil3.compose.AsyncImage
 import com.app.workahomie.data.Request
 import com.app.workahomie.models.RequestViewModel
 import com.app.workahomie.models.RequestsUiState
+import com.app.workahomie.ui.components.EmptyState
 
 @Composable
 fun RequestsScreen(requestViewModel: RequestViewModel = viewModel()) {
@@ -74,10 +75,14 @@ fun RequestsContent(incoming: List<Request>, outgoing: List<Request>) {
 
 @Composable
 fun RequestsList(requests: List<Request>, isIncoming: Boolean) {
-    LazyColumn(modifier = Modifier.padding(16.dp)) {
-        items(requests) { request ->
-            RequestCard(request = request, isIncoming = isIncoming)
-            Spacer(modifier = Modifier.height(16.dp))
+    if (requests.isEmpty()) {
+        EmptyState(message = "You have no ${if (isIncoming) "incoming" else "outgoing"} requests.")
+    } else {
+        LazyColumn(modifier = Modifier.padding(16.dp)) {
+            items(requests) { request ->
+                RequestCard(request = request, isIncoming = isIncoming)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }

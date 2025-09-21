@@ -28,6 +28,7 @@ import com.app.workahomie.models.WishlistUiState
 import com.app.workahomie.models.WishlistViewModel
 import com.app.workahomie.ui.components.LoadingItem
 import com.app.workahomie.ui.components.WishlistCard
+import com.app.workahomie.ui.components.EmptyState
 import com.google.gson.Gson
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -88,40 +89,44 @@ fun Wishlist(
     onLoadMore: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    val listState = rememberLazyListState()
+    if (hosts.isEmpty()) {
+        EmptyState(message = "You have no hosts in your wishlist.")
+    } else {
+        val listState = rememberLazyListState()
 
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo }
-            .collect { layoutInfo ->
-                val totalItems = layoutInfo.totalItemsCount
-                val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                if (lastVisibleItem >= totalItems - 3) {
-                    onLoadMore()
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.layoutInfo }
+                .collect { layoutInfo ->
+                    val totalItems = layoutInfo.totalItemsCount
+                    val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    if (lastVisibleItem >= totalItems - 3) {
+                        onLoadMore()
+                    }
                 }
-            }
-    }
-
-    LazyColumn(
-        state = listState,
-        modifier = modifier
-            .fillMaxSize(),
-        contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(hosts, key = { it.id }) { host ->
-            WishlistCard(
-                host=host,
-                onClick = { onHostClick(host) },
-            )
         }
 
-        if (isPaginating) {
-            item {
-                LoadingItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+        LazyColumn(
+            state = listState,
+            modifier = modifier
+                .fillMaxSize(),
+            contentPadding = contentPadding,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(hosts, key = { it.id }) { host ->
+                WishlistCard(
+                    host=host,
+                    onClick = { onHostClick(host) },
                 )
+            }
+
+            if (isPaginating) {
+                item {
+                    LoadingItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
             }
         }
     }
