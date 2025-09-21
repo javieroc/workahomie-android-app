@@ -1,5 +1,7 @@
 package com.app.workahomie.ui.screens
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -31,7 +33,9 @@ fun MainScreen(
         NavHost(
             navController = navController,
             startDestination = BottomNavScreen.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
         ) {
             composable(BottomNavScreen.Home.route) {
                 HostsScreen(navController = navController)
