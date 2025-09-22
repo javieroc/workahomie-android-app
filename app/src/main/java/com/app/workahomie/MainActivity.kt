@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            WorkahomieTheme(darkTheme = false, dynamicColor = false) {
+            WorkahomieTheme {
                 AuthScreen(authViewModel)
             }
         }
