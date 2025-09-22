@@ -25,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -216,7 +215,7 @@ fun HostDetailsScreen(
 
         item {
             if (createRequestUiState is CreateRequestUiState.Loading) {
-                CircularProgressIndicator()
+                LoadingScreen()
             } else {
                 RequestToStayForm(
                     onSubmit = { checkIn, checkOut, message ->

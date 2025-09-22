@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -41,7 +40,7 @@ fun RequestsScreen(requestViewModel: RequestViewModel = viewModel()) {
 
     when (requestsUiState) {
         is RequestsUiState.Loading -> {
-            CircularProgressIndicator()
+            LoadingScreen()
         }
         is RequestsUiState.Error -> {
             Text(text = requestsUiState.message)
