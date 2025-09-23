@@ -2,11 +2,14 @@ package com.app.workahomie.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -34,6 +37,8 @@ fun HostCard(
     val coroutineScope = rememberCoroutineScope()
     val images = host.profileImages + host.pictures
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
+    val isDarkTheme = isSystemInDarkTheme()
+    val textColor = if (isDarkTheme) Color.White else Color.Black
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -125,17 +130,24 @@ fun HostCard(
                     Text(
                         text = "${host.firstName} ${host.lastName}",
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xff0a0a0a)
+                        color = textColor
                     )
-                    Text(
-                        text = "★ 4.3 (10)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Rating",
+                            tint = if (isDarkTheme) Color(0xFF805AD5) else Color(0xFFD53F8C)
+                        )
+                        Text(
+                            text = "4.3 (10)",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
                 }
 
-                Text(text = host.occupation, style = MaterialTheme.typography.bodySmall, color = Color(0xff0a0a0a))
-                Text(text = host.address, style = MaterialTheme.typography.bodySmall, color = Color(0xff0a0a0a))
+                Text(text = host.occupation, style = MaterialTheme.typography.bodySmall, color = textColor)
+                Text(text = host.address, style = MaterialTheme.typography.bodySmall, color = textColor)
             }
         }
     }
