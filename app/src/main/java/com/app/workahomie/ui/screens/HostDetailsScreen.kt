@@ -5,6 +5,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,6 +61,8 @@ fun HostDetailsScreen(
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
     val context = LocalContext.current
     val createRequestUiState = hostViewModel.createRequestUiState
+    val isDarkTheme = isSystemInDarkTheme()
+    val textColor = if (isDarkTheme) Color.White else Color.Black
 
     LaunchedEffect(createRequestUiState) {
         when (createRequestUiState) {
@@ -134,7 +137,7 @@ fun HostDetailsScreen(
 
                 Text(
                     text = "${pagerState.currentPage + 1} / ${images.size}",
-                    color = Color.White,
+                    color = textColor,
                     fontSize = 12.sp,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -155,14 +158,18 @@ fun HostDetailsScreen(
                 Text(
                     text = host.placeDescription,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = textColor
                 )
             }
         }
 
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Star, contentDescription = "Rating", tint = Color(0xffd53f8c))
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = "Rating",
+                    tint = if (isDarkTheme) Color(0xFF805AD5) else Color(0xFFD53F8C)
+                )
                 Text(
                     text = "4.3 (10) reviews",
                     style = MaterialTheme.typography.bodyMedium,
