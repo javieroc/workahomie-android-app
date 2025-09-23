@@ -15,7 +15,6 @@ import androidx.navigation.navArgument
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.HostViewModel
-import com.app.workahomie.models.RequestViewModel
 import com.app.workahomie.ui.components.BottomNavScreen
 import com.app.workahomie.ui.components.BottomNavigationBar
 import com.google.gson.Gson
