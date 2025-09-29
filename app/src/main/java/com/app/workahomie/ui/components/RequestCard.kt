@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,6 +26,9 @@ import coil3.compose.AsyncImage
 import com.app.workahomie.data.Request
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.Icon
 
 @Composable
 fun RequestCard(request: Request, isIncoming: Boolean) {
@@ -57,6 +61,24 @@ fun RequestCard(request: Request, isIncoming: Boolean) {
             }
 
             Spacer(modifier = Modifier.height(8.dp))
+
+            // WhatsApp / Phone number of the host
+            if (!isIncoming && !request.host.phone.isNullOrBlank()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "WhatsApp",
+                        modifier = Modifier.size(16.dp),
+                        tint = Color(0xFF805AD5)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = request.host.phone,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
             // Status
             Text(
