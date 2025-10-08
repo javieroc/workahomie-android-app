@@ -6,25 +6,25 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Host(
     @SerialName(value = "_id")
-    val id: String,
-    val userId: String,
-    val firstName: String,
-    val lastName: String,
-    val occupation: String,
-    val aboutMe: String,
-    val profileImages: List<String>,
-    val placeDescription: String,
-    val placeDetails: String,
-    val address: String,
-    val location: Location,
-    val facilities: List<String>,
-    val pictures: List<String>,
+    val id: String = "",
+    val userId: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
+    val occupation: String = "",
+    val aboutMe: String = "",
+    val profileImages: List<String> = emptyList(),
+    val placeDescription: String = "",
+    val placeDetails: String = "",
+    val address: String = "",
+    val location: Location? = null, // optional, since new hosts may not have one yet
+    val facilities: List<String> = emptyList(),
+    val pictures: List<String> = emptyList(),
     val phone: String? = null,
     var isWishlisted: Boolean? = false
 )
 
 @Serializable
 data class Location(
-    val type: String,
-    val coordinates: List<Double>
+    val type: String = "Point",
+    val coordinates: List<Double> = listOf(0.0, 0.0)
 )

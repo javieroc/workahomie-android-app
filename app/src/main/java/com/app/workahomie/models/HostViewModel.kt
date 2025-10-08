@@ -10,12 +10,15 @@ import androidx.lifecycle.viewModelScope
 import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
+import com.app.workahomie.network.toMultipartBodyPart
+import com.app.workahomie.network.toRequestBodyPart
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.io.File
 import java.io.IOException
 
 sealed interface HostsUiState {
@@ -29,6 +32,13 @@ sealed interface CreateRequestUiState {
     data class Error(val message: String) : CreateRequestUiState
     data object Loading : CreateRequestUiState
     data object Idle : CreateRequestUiState
+}
+
+sealed interface HostDetailsUiState {
+    data object Loading : HostDetailsUiState
+    data class Success(val host: Host) : HostDetailsUiState
+    data class Error(val message: String) : HostDetailsUiState
+    data object Idle : HostDetailsUiState
 }
 
 class HostViewModel : ViewModel() {
@@ -153,8 +163,87 @@ class HostViewModel : ViewModel() {
                     Log.e("Error", "LatLng is null for placeId: $placeId")
                 }
             }
-            .addOnFailureListener { exception ->
+            .addOnFailureListener { _ ->
                 Log.e("Error", "Failed to fetch place details")
             }
+    }
+
+    var hostState = mutableStateOf<HostDetailsUiState>(HostDetailsUiState.Idle)
+        private set
+
+    fun fetchHostMe() {
+        viewModelScope.launch {
+            hostState.value = HostDetailsUiState.Loading
+            try {
+                val me = HostApi.retrofitService.getHostMe()
+                hostState.value = HostDetailsUiState.Success(me)
+            } catch (e: HttpException) {
+                if (e.code() == 404) {
+                    hostState.value = HostDetailsUiState.Success(Host())
+                } else {
+                    hostState.value = HostDetailsUiState.Error("Server error: ${e.message()}")
+                }
+            } catch (e: Exception) {
+                hostState.value = HostDetailsUiState.Error("Unexpected error: ${e.message}")
+            }
+        }
+    }
+
+    fun saveHost(updatedHost: Host, profileFile: File? = null) {
+        viewModelScope.launch {
+            try {
+                if (updatedHost.id.isEmpty()) {
+                    // New host → create
+                    val profilePart = profileFile?.toMultipartBodyPart("profile")
+                    val createdHost = HostApi.retrofitService.createHost(
+                        firstName = updatedHost.firstName.toRequestBodyPart(),
+                        lastName = updatedHost.lastName.toRequestBodyPart(),
+                        occupation = updatedHost.occupation.toRequestBodyPart(),
+                        aboutMe = updatedHost.aboutMe.toRequestBodyPart(),
+                        phone = updatedHost.phone?.toRequestBodyPart(),
+                        profile = profilePart
+                    )
+                    hostState.value = HostDetailsUiState.Success(createdHost)
+                } else {
+                    // Existing host → update profile
+                    val profilePart = profileFile?.toMultipartBodyPart("profile")
+                    val updated = HostApi.retrofitService.updateHostMe(
+                        firstName = updatedHost.firstName.toRequestBodyPart(),
+                        lastName = updatedHost.lastName.toRequestBodyPart(),
+                        occupation = updatedHost.occupation.toRequestBodyPart(),
+                        aboutMe = updatedHost.aboutMe.toRequestBodyPart(),
+                        phone = updatedHost.phone?.toRequestBodyPart(),
+                        profile = profilePart
+                    )
+                    hostState.value = HostDetailsUiState.Success(updated)
+                }
+            } catch (e: Exception) {
+                hostState.value = HostDetailsUiState.Error("Failed to save host: ${e.message}")
+            }
+        }
+    }
+
+    fun updateHostPlace(updatedHost: Host, pictureFiles: List<File> = emptyList()) {
+        viewModelScope.launch {
+            hostState.value = HostDetailsUiState.Loading
+            try {
+                val pictureParts = pictureFiles.map { it.toMultipartBodyPart("pictures") }
+                val facilityParts = updatedHost.facilities.map { it.toRequestBodyPart() }
+
+                val result = HostApi.retrofitService.updateHostPlace(
+                    address = updatedHost.address.toRequestBodyPart(),
+                    placeDescription = updatedHost.placeDescription.toRequestBodyPart(),
+                    placeDetails = updatedHost.placeDetails.toRequestBodyPart(),
+                    facilities = facilityParts,
+                    pictures = pictureParts
+                )
+
+                hostState.value = HostDetailsUiState.Success(result)
+                Log.d("HostViewModel", "Place updated successfully: ${result.id}")
+            } catch (e: Exception) {
+                Log.e("HostViewModel", "Failed to update host place", e)
+                hostState.value = HostDetailsUiState.Error("Failed to update place")
+            }
+        }
     }
 }

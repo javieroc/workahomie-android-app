@@ -88,14 +88,19 @@ fun HostsMapScreen(
             }
 
             hosts.forEach { host ->
-                CustomMapMarker(
-                    location = LatLng(host.location.coordinates[1], host.location.coordinates[0]),
-                    occupation = host.occupation,
-                    onClick = {
-                        // open mini card for this host
-                        selectedHost = host
+                host.location?.coordinates?.let { coords ->
+                    if (coords.size >= 2) {
+                        CustomMapMarker(
+                            location = LatLng(coords[1], coords[0]),
+                            occupation = host.occupation,
+                            onClick = {
+                                selectedHost = host
+                            }
+                        )
+                    } else {
+                        Log.w("HostsMapScreen", "Host ${host.id} has invalid coordinates: $coords")
                     }
-                )
+                } ?: Log.w("HostsMapScreen", "Host ${host.id} has no location.")
             }
         }
 
