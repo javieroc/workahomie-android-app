@@ -12,14 +12,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostDetailsUiState
 import com.app.workahomie.ui.components.HostProfileForm
 
 @Composable
 fun ProfileScreen(
-    authViewModel: AuthViewModel,
     hostViewModel: HostViewModel
 ) {
     val context = LocalContext.current
@@ -81,10 +79,9 @@ fun ProfileScreen(
                 }
 
                 HostProfileForm(
-                    authViewModel = authViewModel,
                     host = host,
-                    onSaveProfile = { updatedHost ->
-                        hostViewModel.saveHost(updatedHost)
+                    onSaveProfile = { updatedHost, profileUri ->
+                        hostViewModel.saveHost(updatedHost, profileUri, context)
                         val message = if (host.id.isEmpty()) {
                             "You’re now a host! Profile created successfully 🎉"
                         } else {

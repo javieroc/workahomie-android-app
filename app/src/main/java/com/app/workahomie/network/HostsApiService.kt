@@ -23,11 +23,6 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
-
 private const val BASE_URL = "https://workahomie.vercel.app"
 
 private val json = Json {
@@ -92,9 +87,8 @@ interface HostsApiService {
         @Part profile: MultipartBody.Part? = null
     ): Host
 
-    // === Host Place Update ===
     @Multipart
-    @PUT("/hosts/me/place")
+    @PUT("hosts/me/place")
     suspend fun updateHostPlace(
         @Part("address") address: RequestBody,
         @Part("placeDescription") placeDescription: RequestBody,
@@ -126,9 +120,3 @@ object HostApi {
         retrofit.create(HostsApiService::class.java)
     }
 }
-
-fun String.toRequestBodyPart(): RequestBody =
-    this.toRequestBody("text/plain".toMediaTypeOrNull())
-
-fun File.toMultipartBodyPart(fieldName: String): MultipartBody.Part =
-    MultipartBody.Part.createFormData(fieldName, name, asRequestBody("image/*".toMediaTypeOrNull()))

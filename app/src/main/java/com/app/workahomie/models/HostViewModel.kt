@@ -1,6 +1,7 @@
 package com.app.workahomie.models
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,8 +11,9 @@ import androidx.lifecycle.viewModelScope
 import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
-import com.app.workahomie.network.toMultipartBodyPart
-import com.app.workahomie.network.toRequestBodyPart
+import com.app.workahomie.utils.toMultipartBodyPart
+import com.app.workahomie.utils.toRequestBodyPart
+import com.app.workahomie.utils.uriToFile
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -189,34 +191,34 @@ class HostViewModel : ViewModel() {
         }
     }
 
-    fun saveHost(updatedHost: Host, profileFile: File? = null) {
+    fun saveHost(updatedHost: Host, profileUri: Uri?, context: Context) {
         viewModelScope.launch {
             try {
-                if (updatedHost.id.isEmpty()) {
-                    // New host → create
-                    val profilePart = profileFile?.toMultipartBodyPart("profile")
-                    val createdHost = HostApi.retrofitService.createHost(
+                val profileFile = profileUri?.let { uriToFile(context, it, "profile_${updatedHost.userId}.jpg") }
+
+                val responseHost = if (updatedHost.id.isEmpty()) {
+                    // Create host (if applicable)
+                    HostApi.retrofitService.createHost(
                         firstName = updatedHost.firstName.toRequestBodyPart(),
                         lastName = updatedHost.lastName.toRequestBodyPart(),
                         occupation = updatedHost.occupation.toRequestBodyPart(),
                         aboutMe = updatedHost.aboutMe.toRequestBodyPart(),
                         phone = updatedHost.phone?.toRequestBodyPart(),
-                        profile = profilePart
+                        profile = profileFile?.toMultipartBodyPart("profile")
                     )
-                    hostState.value = HostDetailsUiState.Success(createdHost)
                 } else {
-                    // Existing host → update profile
-                    val profilePart = profileFile?.toMultipartBodyPart("profile")
-                    val updated = HostApi.retrofitService.updateHostMe(
+                    // Update existing host with file
+                    HostApi.retrofitService.updateHostMe(
                         firstName = updatedHost.firstName.toRequestBodyPart(),
                         lastName = updatedHost.lastName.toRequestBodyPart(),
                         occupation = updatedHost.occupation.toRequestBodyPart(),
                         aboutMe = updatedHost.aboutMe.toRequestBodyPart(),
                         phone = updatedHost.phone?.toRequestBodyPart(),
-                        profile = profilePart
+                        profile = profileFile?.toMultipartBodyPart("profile")
                     )
-                    hostState.value = HostDetailsUiState.Success(updated)
                 }
+
+                hostState.value = HostDetailsUiState.Success(responseHost)
             } catch (e: Exception) {
                 hostState.value = HostDetailsUiState.Error("Failed to save host: ${e.message}")
             }
@@ -227,22 +229,45 @@ class HostViewModel : ViewModel() {
         viewModelScope.launch {
             hostState.value = HostDetailsUiState.Loading
             try {
-                val pictureParts = pictureFiles.map { it.toMultipartBodyPart("pictures") }
                 val facilityParts = updatedHost.facilities.map { it.toRequestBodyPart() }
 
+                val addressJson = """
+                {
+                  "address": "${updatedHost.address}",
+                  "lat": ${updatedHost.location?.coordinates?.getOrNull(0) ?: 0.0},
+                  "lon": ${updatedHost.location?.coordinates?.getOrNull(1) ?: 0.0}
+                }
+            """.trimIndent()
+                val addressPart = addressJson.toRequestBodyPart()
+
+                // 3️⃣ Convert selected pictures into multipart parts (if any)
+                val pictureParts = if (pictureFiles.isNotEmpty()) {
+                    pictureFiles.map { it.toMultipartBodyPart("pictures") }
+                } else emptyList()
+
+                // --- API call ---
                 val result = HostApi.retrofitService.updateHostPlace(
-                    address = updatedHost.address.toRequestBodyPart(),
+                    address = addressPart,
                     placeDescription = updatedHost.placeDescription.toRequestBodyPart(),
                     placeDetails = updatedHost.placeDetails.toRequestBodyPart(),
                     facilities = facilityParts,
-                    pictures = pictureParts
+                    pictures = if (pictureParts.isNotEmpty()) pictureParts else null
                 )
 
+                // --- Update state with backend result (includes Cloudinary URLs) ---
                 hostState.value = HostDetailsUiState.Success(result)
                 Log.d("HostViewModel", "Place updated successfully: ${result.id}")
+            } catch (e: retrofit2.HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                Log.e(
+                    "HostViewModel",
+                    "HTTP error updating host place: ${e.code()} ${errorBody ?: e.message()}",
+                    e
+                )
+                hostState.value = HostDetailsUiState.Error("Server error: ${e.code()} ${errorBody ?: e.message()}")
             } catch (e: Exception) {
                 Log.e("HostViewModel", "Failed to update host place", e)
-                hostState.value = HostDetailsUiState.Error("Failed to update place")
+                hostState.value = HostDetailsUiState.Error("Failed to update place: ${e.message}")
             }
         }
     }

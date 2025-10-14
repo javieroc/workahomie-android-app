@@ -11,14 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,24 +21,27 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
-import com.app.workahomie.models.AuthViewModel
 
 @Composable
 fun HostProfileForm(
-    authViewModel: AuthViewModel,
     host: Host,
-    onSaveProfile: (Host) -> Unit,
+    onSaveProfile: (Host, Uri?) -> Unit,
     onSavePlace: (Host) -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val profile = authViewModel.userProfile
 
-    // --- Host personal information ---
+    // --- Personal info ---
     var firstName by remember { mutableStateOf(host.firstName) }
     var lastName by remember { mutableStateOf(host.lastName) }
     var occupation by remember { mutableStateOf(host.occupation) }
     var aboutMe by remember { mutableStateOf(host.aboutMe) }
     var phone by remember { mutableStateOf(host.phone ?: "") }
+
+    // --- Profile picture (single) ---
+    var profileUri by remember { mutableStateOf<Uri?>(null) }
+    val profilePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        profileUri = uri
+    }
 
     // --- Workspace info ---
     var address by remember { mutableStateOf(host.address) }
@@ -53,12 +49,11 @@ fun HostProfileForm(
     var placeDetails by remember { mutableStateOf(host.placeDetails) }
     var facilities by remember { mutableStateOf(host.facilities) }
 
-    // --- Images ---
-    val imageUris = remember { mutableStateListOf<Uri>() }
-    val imagePicker =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
-            imageUris.addAll(uris)
-        }
+    // --- Workspace pictures (multiple) ---
+    val pictureUris = remember { mutableStateListOf<Uri>() }
+    val picturePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        pictureUris.addAll(uris)
+    }
 
     Column(
         modifier = Modifier
@@ -75,28 +70,24 @@ fun HostProfileForm(
             label = { Text("First Name") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = lastName,
             onValueChange = { lastName = it },
             label = { Text("Last Name") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = occupation,
             onValueChange = { occupation = it },
             label = { Text("Occupation") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = aboutMe,
             onValueChange = { aboutMe = it },
             label = { Text("About Me") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
@@ -104,6 +95,23 @@ fun HostProfileForm(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.fillMaxWidth()
         )
+
+        // --- Profile picture ---
+        Text("Profile Picture", style = MaterialTheme.typography.titleMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val profileImage = profileUri ?: host.profileImages.firstOrNull()?.let { Uri.parse(it) }
+            profileImage?.let {
+                AsyncImage(
+                    model = it,
+                    contentDescription = "Profile picture",
+                    modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            IconButton(onClick = { profilePicker.launch("image/*") }) {
+                Icon(Icons.Default.AddAPhoto, contentDescription = "Pick profile picture")
+            }
+        }
 
         Button(
             onClick = {
@@ -113,8 +121,9 @@ fun HostProfileForm(
                         lastName = lastName,
                         occupation = occupation,
                         aboutMe = aboutMe,
-                        phone = phone
-                    )
+                        phone = phone,
+                    ),
+                    profileUri
                 )
             },
             modifier = Modifier.fillMaxWidth()
@@ -126,21 +135,18 @@ fun HostProfileForm(
 
         // --- Section: Workspace ---
         Text("Workspace", style = MaterialTheme.typography.titleLarge)
-
         OutlinedTextField(
             value = address,
             onValueChange = { address = it },
             label = { Text("Address") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = placeDescription,
             onValueChange = { placeDescription = it },
             label = { Text("Description") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = placeDetails,
             onValueChange = { placeDetails = it },
@@ -148,26 +154,35 @@ fun HostProfileForm(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // --- Facilities ---
         FacilitySelector(facilities = facilities) { facilities = it }
 
-        // --- Pictures ---
-        Text("Pictures", style = MaterialTheme.typography.titleMedium)
-
+        // --- Workspace pictures ---
+        Text("Workspace Pictures", style = MaterialTheme.typography.titleMedium)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(imageUris.size) { index ->
+            // Existing workspace pictures
+            host.pictures.forEach { picture ->
+                item {
+                    AsyncImage(
+                        model = picture,
+                        contentDescription = null,
+                        modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+            // New pictures selected by the user
+            items(pictureUris.size) { index ->
                 AsyncImage(
-                    model = imageUris[index],
+                    model = pictureUris[index],
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                    modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             }
+            // Add picture button
             item {
-                IconButton(onClick = { imagePicker.launch("image/*") }) {
-                    Icon(Icons.Default.AddAPhoto, contentDescription = "Add photo")
+                IconButton(onClick = { picturePicker.launch("image/*") }) {
+                    Icon(Icons.Default.AddAPhoto, contentDescription = "Add workspace photo")
                 }
             }
         }
@@ -180,7 +195,7 @@ fun HostProfileForm(
                         placeDescription = placeDescription,
                         placeDetails = placeDetails,
                         facilities = facilities,
-                        pictures = imageUris.map { it.toString() }
+                        pictures = host.pictures + pictureUris.map { it.toString() }
                     )
                 )
             },
@@ -218,4 +233,3 @@ fun FacilitySelector(
         }
     }
 }
-
