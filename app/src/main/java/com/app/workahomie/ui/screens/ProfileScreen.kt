@@ -2,6 +2,8 @@ package com.app.workahomie.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostDetailsUiState
+import com.app.workahomie.ui.components.HostPlaceForm
 import com.app.workahomie.ui.components.HostProfileForm
 
 @Composable
@@ -52,12 +55,14 @@ fun ProfileScreen(
 
         is HostDetailsUiState.Success -> {
             val host = state.host
+            val scrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(16.dp)
             ) {
-                // Screen title
                 Text(
                     text = "Host Settings",
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
@@ -79,24 +84,25 @@ fun ProfileScreen(
                 }
 
                 HostProfileForm(
-                    host = host,
+                    host,
                     onSaveProfile = { updatedHost, profileUri ->
                         hostViewModel.saveHost(updatedHost, profileUri, context)
                         val message = if (host.id.isEmpty()) {
-                            "You’re now a host! Profile created successfully 🎉"
+                            "You’re now a host! Profile created successfully"
                         } else {
-                            "Profile updated successfully ✅"
+                            "Profile updated successfully"
                         }
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                    },
-                    onSavePlace = { updatedHost ->
-                        hostViewModel.updateHostPlace(updatedHost)
-                        val message = if (host.id.isEmpty()) {
-                            "Workspace added successfully 🏡"
-                        } else {
-                            "Workspace updated successfully ✅"
-                        }
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                HostPlaceForm(
+                    host,
+                    onSavePlace = { updatedHost, pictureUris ->
+                        hostViewModel.updateHostPlace(updatedHost, pictureUris, context)
+                        Toast.makeText(context, "Workspace updated successfully", Toast.LENGTH_SHORT).show()
                     }
                 )
             }

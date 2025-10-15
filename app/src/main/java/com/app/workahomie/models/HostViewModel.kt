@@ -19,6 +19,8 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
@@ -225,49 +227,31 @@ class HostViewModel : ViewModel() {
         }
     }
 
-    fun updateHostPlace(updatedHost: Host, pictureFiles: List<File> = emptyList()) {
+    fun updateHostPlace(updatedHost: Host, pictureUris: List<Uri>, context: Context) {
         viewModelScope.launch {
             hostState.value = HostDetailsUiState.Loading
             try {
-                val facilityParts = updatedHost.facilities.map { it.toRequestBodyPart() }
-
-                val addressJson = """
-                {
-                  "address": "${updatedHost.address}",
-                  "lat": ${updatedHost.location?.coordinates?.getOrNull(0) ?: 0.0},
-                  "lon": ${updatedHost.location?.coordinates?.getOrNull(1) ?: 0.0}
+                val addressPart = updatedHost.address.toRequestBody("text/plain".toMediaTypeOrNull())
+                val placeDescriptionPart = updatedHost.placeDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+                val placeDetailsPart = updatedHost.placeDetails.toRequestBody("text/plain".toMediaTypeOrNull())
+                val facilityParts = updatedHost.facilities.map { it.toRequestBody("text/plain".toMediaTypeOrNull()) }
+                val pictureParts = pictureUris.mapIndexed { index, uri ->
+                    val file = uriToFile(context, uri, "place_${index}_${updatedHost.userId}.jpg")
+                    file.toMultipartBodyPart("pictures")
                 }
-            """.trimIndent()
-                val addressPart = addressJson.toRequestBodyPart()
-
-                // 3️⃣ Convert selected pictures into multipart parts (if any)
-                val pictureParts = if (pictureFiles.isNotEmpty()) {
-                    pictureFiles.map { it.toMultipartBodyPart("pictures") }
-                } else emptyList()
-
-                // --- API call ---
                 val result = HostApi.retrofitService.updateHostPlace(
                     address = addressPart,
-                    placeDescription = updatedHost.placeDescription.toRequestBodyPart(),
-                    placeDetails = updatedHost.placeDetails.toRequestBodyPart(),
+                    placeDescription = placeDescriptionPart,
+                    placeDetails = placeDetailsPart,
                     facilities = facilityParts,
-                    pictures = if (pictureParts.isNotEmpty()) pictureParts else null
+                    pictures = pictureParts
                 )
 
-                // --- Update state with backend result (includes Cloudinary URLs) ---
                 hostState.value = HostDetailsUiState.Success(result)
                 Log.d("HostViewModel", "Place updated successfully: ${result.id}")
-            } catch (e: retrofit2.HttpException) {
-                val errorBody = e.response()?.errorBody()?.string()
-                Log.e(
-                    "HostViewModel",
-                    "HTTP error updating host place: ${e.code()} ${errorBody ?: e.message()}",
-                    e
-                )
-                hostState.value = HostDetailsUiState.Error("Server error: ${e.code()} ${errorBody ?: e.message()}")
             } catch (e: Exception) {
                 Log.e("HostViewModel", "Failed to update host place", e)
-                hostState.value = HostDetailsUiState.Error("Failed to update place: ${e.message}")
+                hostState.value = HostDetailsUiState.Error("Failed to update place")
             }
         }
     }
