@@ -17,13 +17,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
+import com.app.workahomie.utils.parseAddress
 
 @Composable
 fun HostPlaceForm(
     host: Host,
     onSavePlace: (Host, List<Uri>) -> Unit
 ) {
-    var addressJson by remember { mutableStateOf(host.address) }
+    val parsedAddress = parseAddress(host.address)
+    var addressJson by remember { mutableStateOf(parsedAddress.rawJson) }
+    var addressDisplay by remember { mutableStateOf(parsedAddress.displayName) }
+
     var placeDescription by remember { mutableStateOf(host.placeDescription) }
     var placeDetails by remember { mutableStateOf(host.placeDetails) }
     var facilities by remember { mutableStateOf(host.facilities) }
@@ -42,8 +46,11 @@ fun HostPlaceForm(
         Text("Workspace", style = MaterialTheme.typography.titleLarge)
 
         AddressInputField(
-            initialAddress = "",
-            onAddressSelected = { json -> addressJson = json }
+            initialAddress = addressDisplay,
+            onAddressSelected = { json ->
+                addressJson = json
+                addressDisplay = parseAddress(json).displayName
+            }
         )
 
         OutlinedTextField(
