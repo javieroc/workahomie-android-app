@@ -49,3 +49,22 @@ fun parseAddress(address: String?): ParsedAddress {
         ParsedAddress(displayName = address, rawJson = address)
     }
 }
+
+fun splitPhoneNumber(e164: String): Pair<String, String> {
+    val s = e164.trim()
+    if (!s.startsWith("+")) return "+1" to s
+
+    // Unique dial codes sorted by descending length so longest match wins
+    val dialCodes = allCountries.map { it.dialCode }.distinct().sortedByDescending { it.length }
+
+    for (code in dialCodes) {
+        if (s.startsWith(code)) {
+            val local = s.removePrefix(code)
+            return code to local
+        }
+    }
+
+    // fallback: no known dial code found
+    return "+1" to s.removePrefix("+")
+}
+

@@ -16,6 +16,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
+import com.app.workahomie.utils.splitPhoneNumber
 
 @Composable
 fun HostProfileForm(
@@ -26,7 +27,8 @@ fun HostProfileForm(
     var lastName by remember { mutableStateOf(host.lastName) }
     var occupation by remember { mutableStateOf(host.occupation) }
     var aboutMe by remember { mutableStateOf(host.aboutMe) }
-    var phone by remember { mutableStateOf(host.phone ?: "") }
+    val (initialDialCode, initialNumber) = splitPhoneNumber(host.phone ?: "")
+    var phone by remember { mutableStateOf("${initialDialCode}${initialNumber}") }
 
     var profileUri by remember { mutableStateOf<Uri?>(null) }
     val profilePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
@@ -45,7 +47,11 @@ fun HostProfileForm(
         OutlinedTextField(lastName, { lastName = it }, label = { Text("Last Name") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(occupation, { occupation = it }, label = { Text("Occupation") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(aboutMe, { aboutMe = it }, label = { Text("About Me") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(phone, { phone = it }, label = { Text("Phone") }, modifier = Modifier.fillMaxWidth())
+        PhoneInputField(
+            initialDialCode = initialDialCode,
+            initialNumber = initialNumber,
+            onPhoneChange = { newValue -> phone = newValue }
+        )
 
         Text("Profile Picture", style = MaterialTheme.typography.titleMedium)
         Row(verticalAlignment = Alignment.CenterVertically) {
