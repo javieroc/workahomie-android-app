@@ -1,5 +1,6 @@
 package com.app.workahomie.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,6 +27,7 @@ import com.app.workahomie.data.WishlistDto
 import com.app.workahomie.network.HostApi
 import kotlinx.coroutines.launch
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun HostCard(
     host: Host,
@@ -139,7 +141,7 @@ fun HostCard(
                             tint = if (isDarkTheme) Color(0xFF805AD5) else Color(0xFFD53F8C)
                         )
                         Text(
-                            text = "4.3 (10)",
+                            text = "${String.format("%.1f", host.rate)} (${host.countReviews})",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp)
                         )

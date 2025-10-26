@@ -26,7 +26,8 @@ import com.app.workahomie.data.Host
 fun HostBottomSheet(
     host: Host,
     sheetState: SheetState,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onHostClick: (Host) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -62,7 +63,7 @@ fun HostBottomSheet(
                         .size(56.dp)
                         .clip(CircleShape)
                 )
-                Column {
+                Column(modifier = Modifier.clickable { onHostClick(host) }) {
                     Text(
                         text = "${host.firstName} ${host.lastName}",
                         style = MaterialTheme.typography.titleMedium

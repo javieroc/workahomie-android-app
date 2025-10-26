@@ -20,6 +20,8 @@ data class Host(
     val facilities: List<String> = emptyList(),
     val pictures: List<String> = emptyList(),
     val phone: String? = null,
+    val rate: Float = 0f,
+    val countReviews: Int = 0,
     var isWishlisted: Boolean? = false
 )
 

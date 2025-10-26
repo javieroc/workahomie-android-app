@@ -76,7 +76,11 @@ fun HostsScreen(
                         if (isMapView) {
                             HostsMapScreen(
                                 hosts = hostsUiState.hosts,
-                                modifier = modifier
+                                modifier = modifier,
+                                onHostClick = { host ->
+                                    val hostJson = Uri.encode(Gson().toJson(host))
+                                    navController.navigate("hostDetails/$hostJson")
+                                },
                             )
                         } else {
                             HostsListScreen(

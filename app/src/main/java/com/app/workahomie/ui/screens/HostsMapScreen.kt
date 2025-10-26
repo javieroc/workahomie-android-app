@@ -32,6 +32,9 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
+import android.net.Uri
+import androidx.navigation.NavController
+import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +42,7 @@ fun HostsMapScreen(
     hosts: List<Host>,
     modifier: Modifier = Modifier,
     mapViewModel: MapViewModel = viewModel(),
+    onHostClick: (Host) -> Unit,
 ) {
     val context = LocalContext.current
     val userLocation by mapViewModel.userLocation
@@ -111,7 +115,8 @@ fun HostsMapScreen(
                 onDismissRequest = {
                     scope.launch { sheetState.hide() }
                     selectedHost = null
-                }
+                },
+                onHostClick = { onHostClick(host) }
             )
         }
     }

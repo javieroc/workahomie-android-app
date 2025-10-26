@@ -44,7 +44,7 @@ fun RequestsScreen(requestViewModel: RequestViewModel = viewModel()) {
 @Composable
 fun RequestsContent(incoming: List<Request>, outgoing: List<Request>) {
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Incoming", "Outgoing")
+    val tabs = listOf("Outgoing", "Incoming")
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = selectedTabIndex) {
@@ -56,8 +56,8 @@ fun RequestsContent(incoming: List<Request>, outgoing: List<Request>) {
             }
         }
         when (selectedTabIndex) {
-            0 -> RequestsList(requests = incoming, isIncoming = true)
-            1 -> RequestsList(requests = outgoing, isIncoming = false)
+            0 -> RequestsList(requests = outgoing, isIncoming = false)
+            1 -> RequestsList(requests = incoming, isIncoming = true)
         }
     }
 }

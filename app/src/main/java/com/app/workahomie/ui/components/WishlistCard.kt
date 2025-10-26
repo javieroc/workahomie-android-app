@@ -55,6 +55,10 @@ fun WishlistCard(
             ) {
                 Text("${host.firstName} ${host.lastName}", style = MaterialTheme.typography.titleMedium)
                 Text(host.occupation, style = MaterialTheme.typography.bodyMedium)
+                Text(host.address, style = MaterialTheme.typography.bodySmall)
+                host.phone?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall)
+                }
             }
         }
     }
