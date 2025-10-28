@@ -1,8 +1,8 @@
 package com.app.workahomie.ui.components
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -106,7 +106,7 @@ fun AddressInputField(
                                     adapter.notifyDataSetChanged()
                                 }
                                 .addOnFailureListener { e ->
-                                    Log.e("AddressInputField", "Prediction error: ${e.message}")
+                                    Toast.makeText(ctx, "Prediction error: ${e.message}", Toast.LENGTH_SHORT).show()
                                 }
                         }
                     }
@@ -146,7 +146,7 @@ fun AddressInputField(
                                 onAddressSelected(json)
                             }
                             .addOnFailureListener { e ->
-                                Log.e("AddressInputField", "Failed to fetch place: ${e.message}")
+                                Toast.makeText(ctx, "Failed to fetch place: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
                     }
                 }

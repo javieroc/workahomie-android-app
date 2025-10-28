@@ -2,7 +2,7 @@ package com.app.workahomie.models
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -22,10 +22,10 @@ class MapViewModel: ViewModel() {
                     }
                 }
             } catch (e: SecurityException) {
-                Log.e("Error", "Permission for location access was revoked: ${e.localizedMessage}")
+                Toast.makeText(context, "Permission for location access was revoked.", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Log.e("Error", "Location permission is not granted.")
+            Toast.makeText(context, "Location permission is not granted.", Toast.LENGTH_SHORT).show()
         }
     }
 }

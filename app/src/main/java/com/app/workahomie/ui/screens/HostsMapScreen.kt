@@ -1,7 +1,7 @@
 package com.app.workahomie.ui.screens
 
 import android.content.pm.PackageManager
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -32,9 +32,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
-import android.net.Uri
-import androidx.navigation.NavController
-import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +56,7 @@ fun HostsMapScreen(
         if (isGranted) {
             mapViewModel.fetchUserLocation(context, fusedLocationClient)
         } else {
-            Log.e("Error", "Location permission was denied by the user.")
+            Toast.makeText(context, "Location permission was denied.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,10 +98,10 @@ fun HostsMapScreen(
                                 selectedHost = host
                             }
                         )
-                    } else {
-                        Log.w("HostsMapScreen", "Host ${host.id} has invalid coordinates: $coords")
                     }
-                } ?: Log.w("HostsMapScreen", "Host ${host.id} has no location.")
+                } ?: run {
+                    Toast.makeText(context, "Host has no location", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

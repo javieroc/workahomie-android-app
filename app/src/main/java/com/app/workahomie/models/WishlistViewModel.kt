@@ -1,6 +1,5 @@
 package com.app.workahomie.models
 
-import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +12,7 @@ import java.io.IOException
 sealed interface WishlistUiState {
     data class Success(val hosts: List<Host>) : WishlistUiState
     data class Error(val message: String) : WishlistUiState
-    object Loading : WishlistUiState
+    data object Loading : WishlistUiState
 }
 
 class WishlistViewModel : ViewModel() {
@@ -55,7 +54,6 @@ class WishlistViewModel : ViewModel() {
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 val errorMessage = errorBody ?: e.message()
-                Log.e("Error", errorMessage)
                 wishlistUiState = WishlistUiState.Error(errorMessage)
             } finally {
                 isPaginating = false

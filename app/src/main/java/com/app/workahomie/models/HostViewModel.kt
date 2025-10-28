@@ -2,7 +2,7 @@ package com.app.workahomie.models
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
-import java.io.File
 import java.io.IOException
 
 sealed interface HostsUiState {
@@ -136,7 +135,6 @@ class HostViewModel : ViewModel() {
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 val errorMessage = errorBody ?: e.message()
-                Log.e("Error", errorMessage)
                 hostsUiState = HostsUiState.Error(errorMessage)
             } finally {
                 isPaginating = false
@@ -164,11 +162,11 @@ class HostViewModel : ViewModel() {
                 if (latLng != null) {
                     selectedLocation.value = latLng
                 } else {
-                    Log.e("Error", "LatLng is null for placeId: $placeId")
+                    Toast.makeText(context, "Could not find location for the selected address", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { _ ->
-                Log.e("Error", "Failed to fetch place details")
+                Toast.makeText(context, "Failed to fetch place details", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -248,9 +246,7 @@ class HostViewModel : ViewModel() {
                 )
 
                 hostState.value = HostDetailsUiState.Success(result)
-                Log.d("HostViewModel", "Place updated successfully: ${result.id}")
             } catch (e: Exception) {
-                Log.e("HostViewModel", "Failed to update host place", e)
                 hostState.value = HostDetailsUiState.Error("Failed to update place")
             }
         }
