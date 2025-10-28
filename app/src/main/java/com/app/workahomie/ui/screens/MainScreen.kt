@@ -5,6 +5,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -13,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.app.workahomie.data.Host
+import com.app.workahomie.models.AuthEvent
 import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.ui.components.BottomNavScreen
@@ -25,6 +27,16 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     val hostViewModel: HostViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        authViewModel.events.collect { event ->
+            when (event) {
+                is AuthEvent.NavigateTo -> navController.navigate(BottomNavScreen.Requests.route) {
+                    popUpTo(BottomNavScreen.Home.route) { inclusive = false }
+                }
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }

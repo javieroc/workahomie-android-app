@@ -8,7 +8,6 @@ import com.app.workahomie.models.AuthViewModel
 @Composable
 fun AuthScreen(viewModel: AuthViewModel) {
     val state = viewModel.authState
-    val user = viewModel.userProfile
     val error = viewModel.errorMessage
 
     when (state) {
