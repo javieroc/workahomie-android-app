@@ -84,7 +84,7 @@ class AppMessagingService : FirebaseMessagingService() {
         }
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title ?: "Nueva solicitud")
             .setContentText(if (name != null && body != null) "$name $body" else body)
             .setAutoCancel(true)
