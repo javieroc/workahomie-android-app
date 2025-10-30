@@ -1,6 +1,9 @@
 package com.app.workahomie
 
 import android.app.Activity
+import android.content.Context
+import android.util.Log
+import com.app.workahomie.data.FcmTokenBody
 import com.app.workahomie.network.HostApi
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -12,6 +15,9 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.android.result.UserProfile
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class Auth0Client(
     private val activity: Activity,
@@ -41,6 +47,7 @@ class Auth0Client(
 
                     val token = result.accessToken
                     HostApi.setToken(token)
+
                     authApiClient.userInfo(token)
                         .start(object : Callback<UserProfile, AuthenticationException> {
                             override fun onFailure(error: AuthenticationException) {
@@ -49,6 +56,20 @@ class Auth0Client(
 
                             override fun onSuccess(result: UserProfile) {
                                 onSuccess(token, result)
+
+                                // Send saved FCM token to backend
+                                val fcmToken = activity.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                                    .getString("fcm_token", null)
+
+                                if (!fcmToken.isNullOrEmpty()) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        try {
+                                            HostApi.retrofitService.updateFcmToken(FcmTokenBody(fcmToken))
+                                        } catch (e: Exception) {
+                                            Log.e("FCM", "Failed to send FCM token: ${e.message}")
+                                        }
+                                    }
+                                }
                             }
                         })
                 }

@@ -18,8 +18,11 @@ class AppMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("FCM", "New token: $token")
-        // TODO: Send this token to your backend if needed
+
+        getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            .edit()
+            .putString("fcm_token", token)
+            .apply()
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

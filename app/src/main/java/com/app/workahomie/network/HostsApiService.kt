@@ -1,6 +1,7 @@
 package com.app.workahomie.network
 
 import com.app.workahomie.data.CreateRequestDto
+import com.app.workahomie.data.FcmTokenBody
 import com.app.workahomie.data.Host
 import com.app.workahomie.data.HostsResponse
 import com.app.workahomie.data.ListResponse
@@ -96,6 +97,11 @@ interface HostsApiService {
         @Part("facilities") facilities: List<@JvmSuppressWildcards RequestBody>,
         @Part pictures: List<MultipartBody.Part> = emptyList()
     ): Host
+
+    @PUT("/fcm-tokens")
+    suspend fun updateFcmToken(
+        @Body body: FcmTokenBody
+    )
 }
 
 
