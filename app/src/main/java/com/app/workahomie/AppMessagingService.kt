@@ -28,27 +28,23 @@ class AppMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d("FCM", "From: ${remoteMessage.from}")
 
-        // Handle notification payload (from Firebase Console)
-        remoteMessage.notification?.let { notif ->
-            sendNotification(notif.title, notif.body, null, null)
-        }
-
         // Handle data payload (custom payload with image and name)
         if (remoteMessage.data.isNotEmpty()) {
             Log.d("FCM", "Message data payload: ${remoteMessage.data}")
 
-            val title = remoteMessage.data["title"]
-            val body = remoteMessage.data["body"]
-            val name = remoteMessage.data["name"]
-            val imageUrl = remoteMessage.data["imageUrl"]
+            val title = remoteMessage.data["title"] ?: "Nueva solicitud"
+            val body = remoteMessage.data["body"] ?: ""
+            val senderName = remoteMessage.data["senderName"]
+            val senderAvatar = remoteMessage.data["senderAvatar"]
+            val screen = remoteMessage.data["screen"] ?: "requests"
 
             thread {
                 val bitmap = try {
-                    imageUrl?.let { URL(it).openStream() }?.use { BitmapFactory.decodeStream(it) }
+                    senderAvatar?.let { URL(it).openStream() }?.use { BitmapFactory.decodeStream(it) }
                 } catch (e: Exception) {
                     null
                 }
-                sendNotification(title, body, name, bitmap)
+                sendNotification(title, body, senderName, bitmap, screen)
             }
         }
     }
@@ -56,13 +52,14 @@ class AppMessagingService : FirebaseMessagingService() {
     private fun sendNotification(
         title: String?,
         body: String?,
-        name: String?,
-        imageBitmap: android.graphics.Bitmap?
+        senderName: String?,
+        imageBitmap: android.graphics.Bitmap?,
+        screen: String,
     ) {
         val intent = Intent(this, MainActivity::class.java).apply {
             // Don't clear task here; just reuse top activity if alive
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            putExtra("screen", "requests")
+            putExtra("screen", screen)
         }
 
         val pendingIntent = PendingIntent.getActivity(
@@ -88,8 +85,8 @@ class AppMessagingService : FirebaseMessagingService() {
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(title ?: "Nueva solicitud")
-            .setContentText(if (name != null && body != null) "$name $body" else body)
+            .setContentTitle(title)
+            .setContentText(if (!senderName.isNullOrEmpty()) "$senderName: $body" else body)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
