@@ -12,9 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.graphics.Color
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.parseAddress
@@ -106,9 +108,14 @@ fun HostPlaceForm(
                 )
                 onSavePlace(updatedHost, pictureUris)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF805AD5))
         ) {
-            Text("Save Workspace")
+            Text(
+                text = "Save Workspace",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

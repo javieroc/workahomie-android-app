@@ -4,6 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+enum class RequestStatus {
+    accepted,
+    declined,
+    pending
+}
+
+@Serializable
 data class Request(
     @SerialName("_id")
     val id: String,
@@ -13,7 +20,7 @@ data class Request(
     val userEmail: String? = null,
     val checkIn: String,
     val checkOut: String,
-    val status: String? = null,
+    val status: RequestStatus? = null,
     val host: Host,
     val messages: List<String>
 )

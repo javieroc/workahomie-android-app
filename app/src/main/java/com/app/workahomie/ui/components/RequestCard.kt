@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Request
@@ -29,9 +33,16 @@ import java.time.format.DateTimeFormatter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Icon
+import com.app.workahomie.data.RequestStatus
 
 @Composable
-fun RequestCard(request: Request, isIncoming: Boolean) {
+fun RequestCard(
+    request: Request,
+    isIncoming: Boolean,
+    onAccept: () -> Unit = {},
+    onReject: () -> Unit = {},
+    onCancel: () -> Unit = {}
+) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header Row: Avatar + Name
@@ -87,9 +98,9 @@ fun RequestCard(request: Request, isIncoming: Boolean) {
                 modifier = Modifier
                     .background(
                         color = when (request.status) {
-                            "pending" -> Color(0xFFFFC107).copy(alpha = 0.2f) // amber
-                            "accepted" -> Color(0xFF4CAF50).copy(alpha = 0.2f) // green
-                            "rejected" -> Color(0xFFF44336).copy(alpha = 0.2f) // red
+                            RequestStatus.pending -> Color(0xfff2b035).copy(alpha = 0.2f)
+                            RequestStatus.accepted -> Color(0xff0cf25d).copy(alpha = 0.2f)
+                            RequestStatus.declined -> Color(0xffd92525).copy(alpha = 0.2f)
                             else -> Color.LightGray.copy(alpha = 0.2f)
                         },
                         shape = CircleShape
@@ -100,19 +111,32 @@ fun RequestCard(request: Request, isIncoming: Boolean) {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Actions
-            if (isIncoming && request.status == "pending") {
+            if (isIncoming && request.status == RequestStatus.pending) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { /* TODO: Accept request */ }) {
-                        Text("Accept")
+                    Button(
+                        onClick = onAccept,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF805AD5))
+                    ) {
+                        Text(
+                            text = "Accept",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
-                    Button(onClick = { /* TODO: Reject request */ }) {
+                    OutlinedButton(
+                        onClick = onReject,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF805AD5)),
+                        border = BorderStroke(1.dp, Color(0xFF805AD5))
+                    ) {
                         Text("Reject")
                     }
                 }
-            } else if (!isIncoming && request.status == "pending") {
-                Button(
-                    onClick = { /* TODO: Cancel request */ },
-                    modifier = Modifier.align(Alignment.End)
+            } else if (!isIncoming && request.status == RequestStatus.pending) {
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.align(Alignment.End),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF805AD5)),
+                    border = BorderStroke(1.dp, Color(0xFF805AD5))
                 ) {
                     Text("Cancel Request")
                 }

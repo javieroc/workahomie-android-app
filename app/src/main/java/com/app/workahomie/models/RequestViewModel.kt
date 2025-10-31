@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.workahomie.data.Request
+import com.app.workahomie.data.RequestStatus
+import com.app.workahomie.data.UpdateRequestStatusDto
 import com.app.workahomie.network.HostApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -47,6 +49,32 @@ class RequestViewModel : ViewModel() {
                 )
             } catch (e: Exception) {
                 requestsUiState = RequestsUiState.Error("Failed to fetch requests.")
+            }
+        }
+    }
+
+    fun updateRequestStatus(requestId: String, status: RequestStatus) {
+        viewModelScope.launch {
+            try {
+                val response = HostApi.retrofitService.updateRequestStatus(requestId, UpdateRequestStatusDto(status))
+                if (response.isSuccessful) {
+                    getRequests()
+                } else {
+                    requestsUiState = RequestsUiState.Error("Failed to update request.")
+                }
+            } catch (e: Exception) {
+                requestsUiState = RequestsUiState.Error("Failed to update request.")
+            }
+        }
+    }
+
+    fun cancelRequest(requestId: String) {
+        viewModelScope.launch {
+            try {
+                HostApi.retrofitService.cancelRequest(requestId)
+                getRequests()
+            } catch (e: Exception) {
+                requestsUiState = RequestsUiState.Error("Failed to cancel request.")
             }
         }
     }

@@ -6,6 +6,7 @@ import com.app.workahomie.data.Host
 import com.app.workahomie.data.HostsResponse
 import com.app.workahomie.data.ListResponse
 import com.app.workahomie.data.Request
+import com.app.workahomie.data.UpdateRequestStatusDto
 import com.app.workahomie.data.WishlistDto
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -13,8 +14,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HTTP
 import retrofit2.http.Multipart
@@ -102,6 +105,15 @@ interface HostsApiService {
     suspend fun updateFcmToken(
         @Body body: FcmTokenBody
     )
+
+    @PUT("/requests/{id}")
+    suspend fun updateRequestStatus(
+        @Path("id") requestId: String,
+        @Body dto: UpdateRequestStatusDto
+    ): Response<Unit>
+
+    @DELETE("/requests/{id}")
+    suspend fun cancelRequest(@Path("id") requestId: String)
 }
 
 
