@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.graphics.Color
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.splitPhoneNumber
@@ -77,12 +76,10 @@ fun HostProfileForm(
                 )
                 onSaveProfile(updatedHost, profileUri)
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF805AD5))
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = "Save Profile",
-                color = Color.White,
                 fontWeight = FontWeight.Bold
             )
         }

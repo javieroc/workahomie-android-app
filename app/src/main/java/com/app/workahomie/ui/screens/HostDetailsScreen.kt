@@ -62,7 +62,7 @@ fun HostDetailsScreen(
     val context = LocalContext.current
     val createRequestUiState = hostViewModel.createRequestUiState
     val isDarkTheme = isSystemInDarkTheme()
-    val textColor = if (isDarkTheme) Color.White else Color.Black
+    val textColor = MaterialTheme.colorScheme.onSurface
 
     LaunchedEffect(createRequestUiState) {
         when (createRequestUiState) {
@@ -168,7 +168,7 @@ fun HostDetailsScreen(
                 Icon(
                     Icons.Default.Star,
                     contentDescription = "Rating",
-                    tint = if (isDarkTheme) Color(0xFF805AD5) else Color(0xFFD53F8C)
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "4.3 (10) reviews",

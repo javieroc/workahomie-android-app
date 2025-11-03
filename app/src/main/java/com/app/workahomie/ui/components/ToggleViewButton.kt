@@ -10,13 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -32,19 +30,16 @@ fun ToggleViewButton(
     ) {
         Button(
             onClick = onToggle,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
             shape = RoundedCornerShape(50),
             modifier = Modifier.height(48.dp)
         ) {
             Text(
-                text = if (isMapView) "List" else "Map",
-                color = Color.White
+                text = if (isMapView) "List" else "Map"
             )
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = if (isMapView) Icons.AutoMirrored.Filled.List else Icons.Default.LocationOn,
-                contentDescription = null,
-                tint = Color.White
+                contentDescription = null
             )
         }
     }

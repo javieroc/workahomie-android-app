@@ -12,7 +12,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -31,9 +31,8 @@ sealed class BottomNavScreen(val route: String, val title: String, val icon: Ima
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-    val isDarkTheme = isSystemInDarkTheme()
-    val textColor = if (isDarkTheme) Color.White else Color.Black
-    val indicatorColor = if (isDarkTheme) Color(0xFF805AD5) else Color(0xFFD53F8C)
+    val textColor = MaterialTheme.colorScheme.onSurface
+    val indicatorColor = MaterialTheme.colorScheme.primary
 
     NavigationBar {
         BottomNavScreen.items.forEach { screen ->

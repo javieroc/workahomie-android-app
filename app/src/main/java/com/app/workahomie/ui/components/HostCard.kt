@@ -40,7 +40,7 @@ fun HostCard(
     val images = host.profileImages + host.pictures
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
     val isDarkTheme = isSystemInDarkTheme()
-    val textColor = if (isDarkTheme) Color.White else Color.Black
+    val textColor = MaterialTheme.colorScheme.onSurface
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -138,7 +138,7 @@ fun HostCard(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Rating",
-                            tint = if (isDarkTheme) Color(0xFF805AD5) else Color(0xFFD53F8C)
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "${String.format("%.1f", host.rate)} (${host.countReviews})",

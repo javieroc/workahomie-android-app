@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -79,8 +77,7 @@ fun RequestCard(
                     Icon(
                         imageVector = Icons.Default.Phone,
                         contentDescription = "WhatsApp",
-                        modifier = Modifier.size(16.dp),
-                        tint = Color(0xFF805AD5)
+                        modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -114,19 +111,15 @@ fun RequestCard(
             if (isIncoming && request.status == RequestStatus.pending) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(
-                        onClick = onAccept,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF805AD5))
+                        onClick = onAccept
                     ) {
                         Text(
                             text = "Accept",
-                            color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     OutlinedButton(
-                        onClick = onReject,
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF805AD5)),
-                        border = BorderStroke(1.dp, Color(0xFF805AD5))
+                        onClick = onReject
                     ) {
                         Text("Reject")
                     }
@@ -134,9 +127,7 @@ fun RequestCard(
             } else if (!isIncoming && request.status == RequestStatus.pending) {
                 OutlinedButton(
                     onClick = onCancel,
-                    modifier = Modifier.align(Alignment.End),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF805AD5)),
-                    border = BorderStroke(1.dp, Color(0xFF805AD5))
+                    modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("Cancel Request")
                 }

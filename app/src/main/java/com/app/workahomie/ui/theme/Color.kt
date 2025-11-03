@@ -2,7 +2,7 @@ package com.app.workahomie.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF673FBA)
+val primaryLight = Color(0xFFD53F8C)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFF805AD5)
 val onPrimaryContainerLight = Color(0xFFFCF6FF)
@@ -110,7 +110,7 @@ val surfaceContainerLightHighContrast = Color(0xFFE7E0EB)
 val surfaceContainerHighLightHighContrast = Color(0xFFD9D2DD)
 val surfaceContainerHighestLightHighContrast = Color(0xFFCAC4CF)
 
-val primaryDark = Color(0xFFD1BCFF)
+val primaryDark = Color(0xFF805AD5)
 val onPrimaryDark = Color(0xFF3C0090)
 val primaryContainerDark = Color(0xFF805AD5)
 val onPrimaryContainerDark = Color(0xFFFCF6FF)
