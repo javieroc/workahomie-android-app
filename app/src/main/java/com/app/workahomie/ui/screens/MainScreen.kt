@@ -73,7 +73,7 @@ fun MainScreen(
                 RequestsScreen()
             }
             composable(BottomNavScreen.Profile.route) {
-                ProfileScreen(hostViewModel)
+                ProfileScreen(hostViewModel, authViewModel)
             }
         }
     }

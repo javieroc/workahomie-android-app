@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostDetailsUiState
 import com.app.workahomie.ui.components.HostPlaceForm
@@ -21,7 +22,8 @@ import com.app.workahomie.ui.components.HostProfileForm
 
 @Composable
 fun ProfileScreen(
-    hostViewModel: HostViewModel
+    hostViewModel: HostViewModel,
+    authViewModel: AuthViewModel
 ) {
     val context = LocalContext.current
     val hostState by hostViewModel.hostState
@@ -105,6 +107,19 @@ fun ProfileScreen(
                         Toast.makeText(context, "Workspace updated successfully", Toast.LENGTH_SHORT).show()
                     }
                 )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = { authViewModel.logout() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Text(
+                        text = "Logout",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 

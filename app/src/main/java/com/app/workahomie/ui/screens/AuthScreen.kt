@@ -1,7 +1,6 @@
 package com.app.workahomie.ui.screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.app.workahomie.models.AuthState
 import com.app.workahomie.models.AuthViewModel
 
@@ -15,12 +14,7 @@ fun AuthScreen(viewModel: AuthViewModel) {
 
         AuthState.LOGGED_IN -> MainScreen(authViewModel = viewModel)
 
-        AuthState.NOT_LOGGED_IN -> {
-            LaunchedEffect(Unit) {
-                viewModel.login()
-            }
-            LoadingScreen()
-        }
+        AuthState.NOT_LOGGED_IN -> WelcomeScreen(onLoginClick = { viewModel.login() })
 
         AuthState.ERROR -> ErrorScreen(error ?: "Unknown error")
     }
