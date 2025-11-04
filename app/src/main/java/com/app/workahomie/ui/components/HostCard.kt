@@ -3,7 +3,6 @@ package com.app.workahomie.ui.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,6 +24,7 @@ import com.app.workahomie.R
 import com.app.workahomie.data.Host
 import com.app.workahomie.data.WishlistDto
 import com.app.workahomie.network.HostApi
+import com.app.workahomie.utils.parseAddress
 import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale")
@@ -39,7 +39,6 @@ fun HostCard(
     val coroutineScope = rememberCoroutineScope()
     val images = host.profileImages + host.pictures
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
-    val isDarkTheme = isSystemInDarkTheme()
     val textColor = MaterialTheme.colorScheme.onSurface
 
     Card(
@@ -149,7 +148,7 @@ fun HostCard(
                 }
 
                 Text(text = host.occupation, style = MaterialTheme.typography.bodySmall, color = textColor)
-                Text(text = host.address, style = MaterialTheme.typography.bodySmall, color = textColor)
+                Text(text = parseAddress(host.address).displayName, style = MaterialTheme.typography.bodySmall, color = textColor)
             }
         }
     }

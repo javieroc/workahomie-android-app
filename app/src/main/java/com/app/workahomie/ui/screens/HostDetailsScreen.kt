@@ -5,7 +5,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +47,7 @@ import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.CreateRequestUiState
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.ui.components.RequestToStayForm
+import com.app.workahomie.utils.parseAddress
 
 @Composable
 fun HostDetailsScreen(
@@ -61,7 +61,6 @@ fun HostDetailsScreen(
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { images.size })
     val context = LocalContext.current
     val createRequestUiState = hostViewModel.createRequestUiState
-    val isDarkTheme = isSystemInDarkTheme()
     val textColor = MaterialTheme.colorScheme.onSurface
 
     LaunchedEffect(createRequestUiState) {
@@ -151,7 +150,7 @@ fun HostDetailsScreen(
         item {
             Column {
                 Text(
-                    text = host.address,
+                    text = parseAddress(host.address).displayName,
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))

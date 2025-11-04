@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
+import com.app.workahomie.utils.parseAddress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,7 +99,7 @@ fun HostBottomSheet(
             // Workspace details
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(text = "Workspace", style = MaterialTheme.typography.titleSmall)
-                Text(text = host.address, style = MaterialTheme.typography.bodyMedium)
+                Text(text = parseAddress(host.address).displayName, style = MaterialTheme.typography.bodyMedium)
                 Text(
                     text = host.placeDescription,
                     style = MaterialTheme.typography.bodySmall,

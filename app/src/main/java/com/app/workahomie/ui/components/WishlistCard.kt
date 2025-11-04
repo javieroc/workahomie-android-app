@@ -23,6 +23,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.app.workahomie.data.Host
+import com.app.workahomie.utils.parseAddress
 
 @Composable
 fun WishlistCard(
@@ -55,7 +56,7 @@ fun WishlistCard(
             ) {
                 Text("${host.firstName} ${host.lastName}", style = MaterialTheme.typography.titleMedium)
                 Text(host.occupation, style = MaterialTheme.typography.bodyMedium)
-                Text(host.address, style = MaterialTheme.typography.bodySmall)
+                Text(parseAddress(host.address).displayName, style = MaterialTheme.typography.bodySmall)
                 host.phone?.let {
                     Text(it, style = MaterialTheme.typography.bodySmall)
                 }
