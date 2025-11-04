@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.app.workahomie.R
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.CreateRequestUiState
@@ -185,7 +186,7 @@ fun HostDetailsScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 AsyncImage(
-                    model = host.profileImages[0],
+                    model = host.profileImages.firstOrNull() ?: R.drawable.ic_broken_image,
                     contentDescription = "Host avatar",
                     modifier = Modifier
                         .size(48.dp)

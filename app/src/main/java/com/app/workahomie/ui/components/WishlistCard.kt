@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.app.workahomie.R
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.parseAddress
 
@@ -40,7 +41,7 @@ fun WishlistCard(
         Row(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(host.profileImages.firstOrNull())
+                    .data(host.profileImages.firstOrNull() ?: R.drawable.ic_broken_image)
                     .crossfade(true)
                     .build(),
                 contentDescription = null,

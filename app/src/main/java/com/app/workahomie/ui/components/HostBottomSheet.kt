@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.app.workahomie.R
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.parseAddress
 
@@ -58,7 +59,7 @@ fun HostBottomSheet(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 AsyncImage(
-                    model = host.profileImages.firstOrNull(),
+                    model = host.profileImages.firstOrNull() ?: R.drawable.ic_broken_image,
                     contentDescription = "Host avatar",
                     modifier = Modifier
                         .size(56.dp)

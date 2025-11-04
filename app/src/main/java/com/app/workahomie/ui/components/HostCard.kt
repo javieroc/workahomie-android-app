@@ -51,17 +51,26 @@ fun HostCard(
     ) {
         Column {
             Box {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(310.dp)
-                ) { page ->
+                if (images.isNotEmpty()) {
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(310.dp)
+                    ) { page ->
+                        AsyncImage(
+                            model = images[page],
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                } else {
                     AsyncImage(
-                        model = images[page],
-                        contentDescription = null,
+                        model = R.drawable.ic_broken_image,
+                        contentDescription = "No image available",
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxWidth().height(310.dp)
                     )
                 }
 
