@@ -16,8 +16,8 @@ android {
         applicationId = "com.app.workahomie"
         minSdk = 31
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -27,6 +27,14 @@ android {
         buildConfigField("String", "MAPS_API_KEY", "\"${project.findProperty("MAPS_API_KEY")}\"")
         buildConfigField("String", "AUTH0_CLIENT_ID", "\"${project.findProperty("AUTH0_CLIENT_ID")}\"")
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file(project.findProperty("RELEASE_STORE_FILE") ?: "app/workahomie-keystore.jks")
+            storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String?
+            keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as String?
+            keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String?
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -34,6 +42,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            // Optionally, use the same signing config for easier testing
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
