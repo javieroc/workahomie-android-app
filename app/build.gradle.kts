@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,15 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
     id("com.google.gms.google-services")
+}
+
+// --- Load keystore values manually from secrets.properties (root folder) ---
+val keystoreProps = Properties()
+val secretsFile = rootProject.file("secrets.properties")
+if (secretsFile.exists()) {
+    keystoreProps.load(FileInputStream(secretsFile))
+} else {
+    println("WARNING: secrets.properties not found at project root")
 }
 
 android {
@@ -29,10 +41,18 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file(project.findProperty("RELEASE_STORE_FILE") ?: "app/workahomie-keystore.jks")
-            storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String?
-            keyAlias = project.findProperty("RELEASE_KEY_ALIAS") as String?
-            keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String?
+            // Load values from keystoreProps
+            val storePath = keystoreProps.getProperty("RELEASE_STORE_FILE")
+
+            if (storePath != null) {
+                storeFile = file(storePath)
+            } else {
+                println("❌ ERROR: RELEASE_STORE_FILE missing in secrets.properties")
+            }
+
+            storePassword = keystoreProps.getProperty("RELEASE_STORE_PASSWORD")
+            keyAlias = keystoreProps.getProperty("RELEASE_KEY_ALIAS")
+            keyPassword = keystoreProps.getProperty("RELEASE_KEY_PASSWORD")
         }
     }
     buildTypes {
@@ -70,7 +90,6 @@ secrets {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
