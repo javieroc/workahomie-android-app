@@ -2,7 +2,6 @@ package com.app.workahomie.ui.components
 
 import android.net.Uri
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
@@ -16,6 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.parseAddress
@@ -71,27 +74,50 @@ fun HostPlaceForm(
         FacilitySelector(facilities = facilities) { facilities = it }
 
         Text("Workspace Pictures", style = MaterialTheme.typography.titleMedium)
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            host.pictures.forEach { pic ->
-                item {
-                    AsyncImage(
-                        model = pic,
-                        contentDescription = null,
-                        modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-            items(pictureUris.size) { idx ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 400.dp), // optional max height for scroll inside the screen
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Show existing pictures
+            items(host.pictures) { pic ->
                 AsyncImage(
-                    model = pictureUris[idx],
+                    model = pic,
                     contentDescription = null,
-                    modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
+                    modifier = Modifier
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .fillMaxWidth(),
                     contentScale = ContentScale.Crop
                 )
             }
+
+            // Show newly picked pictures
+            items(pictureUris) { uri ->
+                AsyncImage(
+                    model = uri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            // Add photo button as the last item
             item {
-                IconButton(onClick = { picturePicker.launch("image/*") }) {
+                IconButton(
+                    onClick = { picturePicker.launch("image/*") },
+                    modifier = Modifier
+                        .height(100.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                ) {
                     Icon(Icons.Default.AddAPhoto, contentDescription = "Add workspace photo")
                 }
             }
