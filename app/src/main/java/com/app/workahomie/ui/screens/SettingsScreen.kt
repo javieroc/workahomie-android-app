@@ -21,7 +21,7 @@ import com.app.workahomie.ui.components.HostPlaceForm
 import com.app.workahomie.ui.components.HostProfileForm
 
 @Composable
-fun ProfileScreen(
+fun SettingsScreen(
     hostViewModel: HostViewModel,
     authViewModel: AuthViewModel
 ) {

@@ -72,8 +72,8 @@ fun MainScreen(
             composable(BottomNavScreen.Requests.route) {
                 RequestsScreen()
             }
-            composable(BottomNavScreen.Profile.route) {
-                ProfileScreen(hostViewModel, authViewModel)
+            composable(BottomNavScreen.Settings.route) {
+                SettingsScreen(hostViewModel, authViewModel)
             }
         }
     }

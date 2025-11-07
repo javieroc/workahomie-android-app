@@ -1,10 +1,10 @@
 package com.app.workahomie.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,11 +20,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 sealed class BottomNavScreen(val route: String, val title: String, val icon: ImageVector) {
     data object Home : BottomNavScreen("hosts", "Hosts", Icons.Default.Home)
     data object Explore : BottomNavScreen("wishlist", "Wishlist", Icons.Default.FavoriteBorder)
-    data object Requests : BottomNavScreen("requests", "My Requests", Icons.Default.Send)
-    data object Profile : BottomNavScreen("profile", "Profile", Icons.Default.Person)
+    data object Requests : BottomNavScreen("requests", "My Requests", Icons.AutoMirrored.Filled.Send)
+    data object Settings : BottomNavScreen("settings", "Settings", Icons.Default.Settings)
 
     companion object {
-        val items = listOf(Home, Explore, Requests, Profile)
+        val items = listOf(Home, Explore, Requests, Settings)
     }
 }
 
