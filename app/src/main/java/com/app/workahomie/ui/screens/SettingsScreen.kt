@@ -65,12 +65,6 @@ fun SettingsScreen(
                     .verticalScroll(scrollState)
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "Host Settings",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.primary
-                )
-
                 // Subtitle for first-time host
                 if (host.id.isEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -80,8 +74,6 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Start
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                } else {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 

@@ -55,13 +55,6 @@ fun WishlistScreen(
                     .fillMaxSize()
                     .padding(horizontal = 8.dp)
             ) {
-                Text(
-                    text = "Wishlist",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .align(Alignment.Start)
-                )
                 when (uiState) {
                     is WishlistUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
                     is WishlistUiState.Success -> Wishlist(

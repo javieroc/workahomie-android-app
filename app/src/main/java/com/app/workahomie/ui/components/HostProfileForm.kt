@@ -38,8 +38,7 @@ fun HostProfileForm(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Host Profile", style = MaterialTheme.typography.titleLarge)

@@ -43,8 +43,7 @@ fun HostPlaceForm(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Workspace", style = MaterialTheme.typography.titleLarge)
