@@ -1,10 +1,15 @@
 package com.app.workahomie.ui.components
 
 import android.net.Uri
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,10 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import coil3.compose.AsyncImage
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.parseAddress
@@ -26,7 +27,7 @@ import com.app.workahomie.utils.parseAddress
 @Composable
 fun HostPlaceForm(
     host: Host,
-    onSavePlace: (Host, List<Uri>) -> Unit
+    onSavePlace: (Host, List<String>, List<Uri>) -> Unit
 ) {
     val parsedAddress = parseAddress(host.address)
     var addressJson by remember { mutableStateOf(parsedAddress.rawJson) }
@@ -36,14 +37,23 @@ fun HostPlaceForm(
     var placeDetails by remember { mutableStateOf(host.placeDetails) }
     var facilities by remember { mutableStateOf(host.facilities) }
 
-    val pictureUris = remember { mutableStateListOf<Uri>() }
+    val existingPictures = remember { mutableStateListOf<String>() }
+
+    val newPictures = remember { mutableStateListOf<Uri>() }
+
+    LaunchedEffect(host.pictures) {
+        existingPictures.clear()
+        existingPictures.addAll(host.pictures)
+    }
+
     val picturePicker = rememberLauncherForActivityResult(
         ActivityResultContracts.GetMultipleContents()
-    ) { uris -> pictureUris.addAll(uris) }
+    ) { uris ->
+        newPictures.addAll(uris)
+    }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text("Workspace", style = MaterialTheme.typography.titleLarge)
@@ -73,41 +83,53 @@ fun HostPlaceForm(
         FacilitySelector(facilities = facilities) { facilities = it }
 
         Text("Workspace Pictures", style = MaterialTheme.typography.titleMedium)
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 400.dp), // optional max height for scroll inside the screen
+            modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Show existing pictures
-            items(host.pictures) { pic ->
-                AsyncImage(
-                    model = pic,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(100.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )
+            items(existingPictures) { pic ->
+                Box {
+                    AsyncImage(
+                        model = pic,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(100.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Crop
+                    )
+                    IconButton(
+                        onClick = { existingPictures.remove(pic) },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = "Remove picture")
+                    }
+                }
             }
 
-            // Show newly picked pictures
-            items(pictureUris) { uri ->
-                AsyncImage(
-                    model = uri,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(100.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )
+            items(newPictures) { uri ->
+                Box {
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(100.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Crop
+                    )
+                    IconButton(
+                        onClick = { newPictures.remove(uri) },
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = "Remove picture")
+                    }
+                }
             }
 
-            // Add photo button as the last item
             item {
                 IconButton(
                     onClick = { picturePicker.launch("image/*") },
@@ -115,7 +137,11 @@ fun HostPlaceForm(
                         .height(100.dp)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                            RoundedCornerShape(8.dp)
+                        )
                 ) {
                     Icon(Icons.Default.AddAPhoto, contentDescription = "Add workspace photo")
                 }
@@ -130,17 +156,15 @@ fun HostPlaceForm(
                     placeDetails = placeDetails,
                     facilities = facilities,
                 )
-                onSavePlace(updatedHost, pictureUris)
+                onSavePlace(updatedHost, existingPictures.toList(), newPictures.toList())
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "Save Workspace",
-                fontWeight = FontWeight.Bold
-            )
+            Text("Save Workspace", fontWeight = FontWeight.Bold)
         }
     }
 }
+
 
 @Composable
 fun FacilitySelector(

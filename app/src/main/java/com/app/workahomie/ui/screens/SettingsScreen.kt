@@ -94,8 +94,13 @@ fun SettingsScreen(
 
                 HostPlaceForm(
                     host,
-                    onSavePlace = { updatedHost, pictureUris ->
-                        hostViewModel.updateHostPlace(updatedHost, pictureUris, context)
+                    onSavePlace = { updatedHost, existingPictures, newPictures ->
+                        hostViewModel.updateHostPlace(
+                            updatedHost = updatedHost,
+                            existingPictures = existingPictures,
+                            newPictureUris = newPictures,
+                            context = context
+                        )
                         Toast.makeText(context, "Workspace updated successfully", Toast.LENGTH_SHORT).show()
                     }
                 )

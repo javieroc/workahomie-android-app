@@ -97,7 +97,8 @@ interface HostsApiService {
         @Part("address") address: RequestBody,
         @Part("placeDescription") placeDescription: RequestBody,
         @Part("placeDetails") placeDetails: RequestBody,
-        @Part("facilities") facilities: List<@JvmSuppressWildcards RequestBody>,
+        @Part facilities: List<MultipartBody.Part>,
+        @Part existingPictures: List<MultipartBody.Part>,
         @Part pictures: List<MultipartBody.Part> = emptyList()
     ): Host
 

@@ -12,6 +12,7 @@ import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
 import com.app.workahomie.network.HostApi
 import com.app.workahomie.utils.toMultipartBodyPart
+import com.app.workahomie.utils.toMultipartBodyParts
 import com.app.workahomie.utils.toRequestBodyPart
 import com.app.workahomie.utils.uriToFile
 import com.google.android.gms.maps.model.LatLng
@@ -225,27 +226,38 @@ class HostViewModel : ViewModel() {
         }
     }
 
-    fun updateHostPlace(updatedHost: Host, pictureUris: List<Uri>, context: Context) {
+    fun updateHostPlace(
+        updatedHost: Host,
+        existingPictures: List<String>,
+        newPictureUris: List<Uri>,
+        context: Context
+    ) {
         viewModelScope.launch {
             hostState.value = HostDetailsUiState.Loading
             try {
                 val addressPart = updatedHost.address.toRequestBody("text/plain".toMediaTypeOrNull())
                 val placeDescriptionPart = updatedHost.placeDescription.toRequestBody("text/plain".toMediaTypeOrNull())
                 val placeDetailsPart = updatedHost.placeDetails.toRequestBody("text/plain".toMediaTypeOrNull())
-                val facilityParts = updatedHost.facilities.map { it.toRequestBody("text/plain".toMediaTypeOrNull()) }
-                val pictureParts = pictureUris.mapIndexed { index, uri ->
+
+                val facilityParts = updatedHost.facilities.toMultipartBodyParts("facilities")
+                val existingPicturesParts = existingPictures.toMultipartBodyParts("existingPictures")
+
+                val pictureParts = newPictureUris.mapIndexed { index, uri ->
                     val file = uriToFile(context, uri, "place_${index}_${updatedHost.userId}.jpg")
                     file.toMultipartBodyPart("pictures")
                 }
+
                 val result = HostApi.retrofitService.updateHostPlace(
                     address = addressPart,
                     placeDescription = placeDescriptionPart,
                     placeDetails = placeDetailsPart,
                     facilities = facilityParts,
+                    existingPictures = existingPicturesParts,
                     pictures = pictureParts
                 )
 
                 hostState.value = HostDetailsUiState.Success(result)
+
             } catch (e: Exception) {
                 hostState.value = HostDetailsUiState.Error("Failed to update place")
             }

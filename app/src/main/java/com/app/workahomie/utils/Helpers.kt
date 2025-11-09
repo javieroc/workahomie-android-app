@@ -18,6 +18,11 @@ fun String.toRequestBodyPart(): RequestBody =
 fun File.toMultipartBodyPart(fieldName: String): MultipartBody.Part =
     MultipartBody.Part.createFormData(fieldName, name, asRequestBody("image/*".toMediaTypeOrNull()))
 
+fun List<String>.toMultipartBodyParts(name: String): List<MultipartBody.Part> =
+    mapIndexed { index, value ->
+        MultipartBody.Part.createFormData(name, value)
+    }
+
 fun uriToFile(context: Context, uri: Uri, fileName: String = "temp_upload"): File {
     val inputStream = context.contentResolver.openInputStream(uri)
         ?: throw IllegalArgumentException("Cannot open URI: $uri")
