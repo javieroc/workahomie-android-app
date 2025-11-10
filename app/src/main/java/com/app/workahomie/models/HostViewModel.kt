@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.workahomie.data.CreateRequestDto
 import com.app.workahomie.data.Host
+import com.app.workahomie.data.HostFilters
 import com.app.workahomie.network.HostApi
 import com.app.workahomie.utils.toMultipartBodyPart
 import com.app.workahomie.utils.toMultipartBodyParts
@@ -68,6 +69,9 @@ class HostViewModel : ViewModel() {
     var selectedLocation = mutableStateOf<LatLng?>(null)
         private set
 
+    var hostFilters by mutableStateOf(HostFilters())
+        private set
+
     init {
         loadMoreHosts()
     }
@@ -120,7 +124,10 @@ class HostViewModel : ViewModel() {
                     offset = offset,
                     limit = limit,
                     lat = latLng?.latitude,
-                    lng = latLng?.longitude
+                    lng = latLng?.longitude,
+                    occupations = hostFilters.occupations.ifEmpty { null },
+                    facilities = hostFilters.facilities.ifEmpty { null },
+                    rate = hostFilters.rate
                 )
                 val newHosts = response.data
 
@@ -169,6 +176,11 @@ class HostViewModel : ViewModel() {
             .addOnFailureListener { _ ->
                 Toast.makeText(context, "Failed to fetch place details", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    fun applyFilters(filters: HostFilters) {
+        hostFilters = filters
+        refreshHosts()
     }
 
     var hostState = mutableStateOf<HostDetailsUiState>(HostDetailsUiState.Idle)

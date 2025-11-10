@@ -42,7 +42,10 @@ interface HostsApiService {
         @Query("offset") offset: Int? = 0,
         @Query("limit") limit: Int? = 10,
         @Query("lat") lat: Double? = null,
-        @Query("lng") lng: Double? = null
+        @Query("lng") lng: Double? = null,
+        @Query("occupations[]") occupations: List<String>? = null,
+        @Query("facilities[]") facilities: List<String>? = null,
+        @Query("rate") rate: Double? = null,
     ): HostsResponse
 
     @GET("/wishlists/full")

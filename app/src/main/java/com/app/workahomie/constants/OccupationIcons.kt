@@ -28,6 +28,12 @@ import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.vector.ImageVector
 
+// Object used to match your TS structure: { name: string, icon: component }
+data class OccupationItem(
+    val name: String,
+    val icon: ImageVector
+)
+
 val occupationIcons: Map<String, ImageVector> = mapOf(
     "Accountant" to Icons.Default.AccountBalance,
     "Architect" to Icons.Default.Architecture,
@@ -57,3 +63,12 @@ val occupationIcons: Map<String, ImageVector> = mapOf(
     "Writer" to Icons.Default.Create,
     "Others" to Icons.Default.Work
 )
+
+val OCCUPATIONS: List<OccupationItem> = occupationIcons.map { (label, icon) ->
+    OccupationItem(
+        name = label.lowercase(),
+        icon = icon
+    )
+}
+
+typealias Occupation = String

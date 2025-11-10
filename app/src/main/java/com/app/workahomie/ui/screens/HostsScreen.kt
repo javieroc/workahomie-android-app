@@ -4,25 +4,38 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostsUiState
+import com.app.workahomie.ui.components.FiltersBottomSheet
 import com.app.workahomie.ui.components.HostCard
 import com.app.workahomie.ui.components.LoadingItem
 import com.app.workahomie.ui.components.SearchBar
@@ -36,10 +49,14 @@ fun HostsScreen(
     viewModel: HostViewModel = viewModel(),
     navController: NavController,
 ) {
+    val context = LocalContext.current
     val hostsUiState = viewModel.hostsUiState
     val isPaginating = viewModel.isPaginating
     val isMapView = viewModel.isMapView
     val selectedLocation = viewModel.selectedLocation.value
+
+    var showFilters by remember { mutableStateOf(false) }
+    var currentFilters by remember { mutableStateOf(viewModel.hostFilters) }
 
     LaunchedEffect(selectedLocation) {
         selectedLocation?.let {
@@ -64,11 +81,30 @@ fun HostsScreen(
                     .fillMaxSize()
                     .padding(horizontal = 8.dp)
             ) {
-                SearchBar(
-                    onPlaceSelected = { placeId ->
-                        viewModel.fetchLatLngFromPlaceId(placeId, context = navController.context)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SearchBar(
+                        modifier = Modifier.weight(1f),
+                        onPlaceSelected = { placeId ->
+                            viewModel.fetchLatLngFromPlaceId(placeId, context = context)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.padding(2.dp))
+
+                    IconButton(
+                        onClick = { showFilters = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FilterList,
+                            contentDescription = "Filters",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                )
+                }
 
                 when (hostsUiState) {
                     is HostsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
@@ -99,6 +135,18 @@ fun HostsScreen(
                 }
             }
         }
+    }
+
+    if (showFilters) {
+        FiltersBottomSheet(
+            filters = currentFilters,
+            onApply = { newFilters ->
+                currentFilters = newFilters
+                viewModel.applyFilters(newFilters)
+                showFilters = false
+            },
+            onClose = { showFilters = false }
+        )
     }
 }
 
