@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import coil3.compose.AsyncImage
+import com.app.workahomie.constants.FACILITIES
 import com.app.workahomie.data.Host
 import com.app.workahomie.utils.parseAddress
 
@@ -171,7 +172,7 @@ fun FacilitySelector(
     facilities: List<String>,
     onFacilitiesChange: (List<String>) -> Unit
 ) {
-    val options = listOf("garden", "showers", "parking", "coffee", "kitchen", "wifi", "snacks")
+    val options = FACILITIES
 
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         options.forEach { option ->

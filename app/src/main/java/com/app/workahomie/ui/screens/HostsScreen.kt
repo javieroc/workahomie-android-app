@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.models.HostsUiState
+import com.app.workahomie.ui.components.EmptyState
 import com.app.workahomie.ui.components.FiltersBottomSheet
 import com.app.workahomie.ui.components.HostCard
 import com.app.workahomie.ui.components.LoadingItem
@@ -119,16 +120,20 @@ fun HostsScreen(
                                 },
                             )
                         } else {
-                            HostsListScreen(
-                                hostsUiState.hosts,
-                                isPaginating = isPaginating,
-                                onLoadMore = { viewModel.loadMoreHosts() },
-                                onHostClick = { host ->
-                                    val hostJson = Uri.encode(Gson().toJson(host))
-                                    navController.navigate("hostDetails/$hostJson")
-                                },
-                                modifier = modifier.fillMaxWidth(),
-                            )
+                            if (hostsUiState.hosts.isEmpty()) {
+                                EmptyState(message = "No hosts found. Try adjusting your filters.")
+                            } else {
+                                HostsListScreen(
+                                    hostsUiState.hosts,
+                                    isPaginating = isPaginating,
+                                    onLoadMore = { viewModel.loadMoreHosts() },
+                                    onHostClick = { host ->
+                                        val hostJson = Uri.encode(Gson().toJson(host))
+                                        navController.navigate("hostDetails/$hostJson")
+                                    },
+                                    modifier = modifier.fillMaxWidth(),
+                                )
+                            }
                         }
                     }
                     is HostsUiState.Error -> ErrorScreen( error = hostsUiState.message, modifier = modifier.fillMaxSize())

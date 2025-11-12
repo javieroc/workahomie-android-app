@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.vector.ImageVector
 
-// Object used to match your TS structure: { name: string, icon: component }
 data class OccupationItem(
     val name: String,
     val icon: ImageVector
@@ -70,5 +69,3 @@ val OCCUPATIONS: List<OccupationItem> = occupationIcons.map { (label, icon) ->
         icon = icon
     )
 }
-
-typealias Occupation = String

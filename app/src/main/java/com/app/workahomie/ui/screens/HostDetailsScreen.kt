@@ -1,6 +1,7 @@
 package com.app.workahomie.ui.screens
 
 import android.content.Intent
+import androidx.compose.foundation.layout.FlowRow
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -43,12 +44,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.app.workahomie.R
+import com.app.workahomie.constants.facilityIcons
 import com.app.workahomie.data.Host
 import com.app.workahomie.models.AuthViewModel
 import com.app.workahomie.models.CreateRequestUiState
 import com.app.workahomie.models.HostViewModel
 import com.app.workahomie.ui.components.RequestToStayForm
 import com.app.workahomie.utils.parseAddress
+
 
 @Composable
 fun HostDetailsScreen(
@@ -175,6 +178,46 @@ fun HostDetailsScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 4.dp)
                 )
+            }
+        }
+
+        item {
+            Column {
+                Text(
+                    text = "Facilities",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    host.facilities.forEach { facility ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            facilityIcons[facility]?.let { icon ->
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = facility,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
+                            Text(
+                                text = facility.replaceFirstChar { it.uppercase() },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
             }
         }
 
