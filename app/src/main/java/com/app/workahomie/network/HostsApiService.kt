@@ -27,7 +27,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-private const val BASE_URL = "https://workahomie.vercel.app"
+private const val BASE_URL = "https://workahomie-production.up.railway.app"
 
 private val json = Json {
     ignoreUnknownKeys = true
