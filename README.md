@@ -37,6 +37,16 @@ Workahomie is packed with features to ensure a seamless and enjoyable user exper
 *   **🔔 Real-time Notifications:**
     *   Stay informed with push notifications about the status of your booking requests, powered by Firebase Cloud Messaging.
 
+## Screenshots
+
+| Discover | Wishlist |
+| :---: | :---: |
+| ![Discover Screen](screenshots/workahomies-screenshot1.jpeg) | ![Wishlist Screen](screenshots/workahomies-screenshot2.jpeg) |
+
+| Requests | Host Details |
+| :---: | :---: |
+| ![Requests Screen](screenshots/workahomies-screenshot3.jpeg) | ![Host Details Screen](screenshots/workahomies-screenshot4.jpeg) |
+
 ## Design & Architecture
 
 This application is built from the ground up using the latest standards and best practices in modern Android development. The architecture is intentionally designed to be robust, scalable, and easy to maintain.
